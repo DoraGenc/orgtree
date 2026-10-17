@@ -1,0 +1,67 @@
+<UserControl x:Class="OrgTree.App.Views.StartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel>
+        <TextBlock Text="Willkommen bei orgtree!"
+            Margin="0,100,0,0"
+            FontSize="80"
+            Foreground="Black"
+            HorizontalAlignment="Left"/>
+        <TextBlock Text="Was steht heute an?"
+            Margin="0,8,0,0"
+            FontSize="32"
+            Foreground="#545454"
+            HorizontalAlignment="Left"/>
+
+        <TextBlock Text="Abteilungen"
+            Margin="0,40,0,0"
+            FontSize="24"
+            Foreground="#a6a6a6"
+            HorizontalAlignment="Left"/>        
+        <Button Content="Abteilungen"
+            FontSize="24"
+            Height="60"
+            Margin="0,8,0,0"
+            HorizontalContentAlignment="Center"
+            Background="#c1ff72"
+            BorderBrush="Black"
+            BorderThickness="1"/>
+
+        <TextBlock Text="Mitarbeiter"
+            Margin="0,32,0,0"
+            FontSize="24"
+            Foreground="#a6a6a6"
+            HorizontalAlignment="Left"/>        
+        <Button Content="MitarbeiterInnen"
+            FontSize="24"
+            Height="60"
+            Margin="0,8,0,0"
+            HorizontalContentAlignment="Center"
+            Background="#7ed957"
+            BorderBrush="Black"
+            BorderThickness="1"/>
+        <Button Content="Baumansicht"
+            FontSize="24"
+            Height="60"
+            Margin="0,16,0,0"
+            HorizontalContentAlignment="Center"
+            Background="#7ed957"
+            BorderBrush="Black"
+            BorderThickness="1"/>
+
+        <TextBlock Text="Strukturen"
+            Margin="0,32,0,0"
+            FontSize="24"
+            Foreground="#a6a6a6"
+            HorizontalAlignment="Left"/>        
+        <Button Content="Organigramm"
+            FontSize="24"
+            Height="60"
+            Margin="0,8,0,0"
+            HorizontalContentAlignment="Center"
+            Background="#925c3a"
+            BorderBrush="White"
+            BorderThickness="1"/>
+    </StackPanel>
+</UserControl>
