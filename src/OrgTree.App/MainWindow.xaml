@@ -6,8 +6,80 @@
         xmlns:local="clr-namespace:OrgTree.App"
         xmlns:views="clr-namespace:OrgTree.App.Views"
         mc:Ignorable="d"
-        Title="MainWindow">
-    <Border Padding="50">
-        <views:StartView/>
-    </Border>
+        Title="MainWindow"
+        Background="#C3DBB6">
+
+    <Window.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                Padding="0,18">
+                            <ContentPresenter ContentSource="Header"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#B3CFA5"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#9DB594"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <DockPanel>
+                            <!-- Banner: ein Grid statt TabPanel. Spalte 0 fest fürs Logo,
+                                 die restlichen 4 teilen sich den übrigen Platz gleichmäßig -->
+                            <Grid DockPanel.Dock="Top" IsItemsHost="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="140"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                            <Border Background="White">
+                                <ContentPresenter ContentSource="SelectedContent"/>
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <TabControl>
+        <TabItem Grid.Column="0" Background="#E6FFD9">
+            <TabItem.Header>
+                <TextBlock Text="🌳" FontSize="36"/>
+            </TabItem.Header>
+            <views:StartView/>
+        </TabItem>
+        <TabItem Grid.Column="1" Header="Abteilungen">
+            <views:DepartmentsView/>
+        </TabItem>
+         <TabItem Grid.Column="2" Header="MitarbeiterInnen">
+            <views:DepartmentsView/>
+        </TabItem>
+        <TabItem Grid.Column="3" Header="Baumansicht">
+            <views:DepartmentsView/>
+        </TabItem>
+        <TabItem Grid.Column="4" Header="Organigramm">
+            <views:DepartmentsView/>
+        </TabItem>
+    </TabControl>
 </Window>

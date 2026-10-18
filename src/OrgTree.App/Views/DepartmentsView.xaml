@@ -1,0 +1,6 @@
+<UserControl x:Class="OrgTree.App.Views.DepartmentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Padding="50">
+    </Border>
+</UserControl>
