@@ -22,6 +22,9 @@ namespace OrgTree.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ColorHex")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("LeaderId")
                         .HasColumnType("INTEGER");
 
@@ -43,10 +46,10 @@ namespace OrgTree.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("DepartmentHead")
+                    b.Property<bool?>("DepartmentHead")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("FirstName")

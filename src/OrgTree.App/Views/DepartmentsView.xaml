@@ -2,5 +2,24 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Border Padding="50">
+        <DataGrid ItemsSource="{Binding Departments}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Farbe">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Width="20" Height="20"
+                                    Background="{Binding ColorHex}"
+                                    BorderBrush="Black" BorderThickness="1"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="AbteilungsLeiterIn" Binding="{Binding LeaderName}"/>
+                <DataGridTextColumn Header="Übergeordnete Abteilung" Binding="{Binding ParentDepartmentName}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Border>
 </UserControl>

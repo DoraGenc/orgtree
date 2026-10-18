@@ -41,8 +41,6 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TabControl">
                         <DockPanel>
-                            <!-- Banner: ein Grid statt TabPanel. Spalte 0 fest fürs Logo,
-                                 die restlichen 4 teilen sich den übrigen Platz gleichmäßig -->
                             <Grid DockPanel.Dock="Top" IsItemsHost="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="140"/>
