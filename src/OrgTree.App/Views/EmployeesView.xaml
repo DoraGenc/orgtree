@@ -9,21 +9,25 @@
                 <DataGridTemplateColumn CellTemplate="{StaticResource RowActionsTemplate}"/>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Telefonnummer" Binding="{Binding PhoneNumber}"/>
-                <DataGridTextColumn Header="Abteilung" Binding="{Binding DepartmentName}"/>
-                <DataGridCheckBoxColumn Header="AbteilungsleiterIn?" Binding="{Binding IsDepartmentHead}">
-                    <DataGridCheckBoxColumn.HeaderStyle>
+                <DataGridTextColumn Header="Telefonnummer"
+                                    Binding="{Binding PhoneNumber, TargetNullValue=-}"
+                                    ElementStyle="{StaticResource CellText}"/>
+                <DataGridTextColumn Header="Abteilung"
+                                    Binding="{Binding DepartmentName, TargetNullValue=-}"
+                                    ElementStyle="{StaticResource CellText}"/>
+                <DataGridTextColumn Header="AbteilungsleiterIn?"
+                                    Binding="{Binding DepartmentHead, TargetNullValue=-}">
+                    <DataGridTextColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         </Style>
-                    </DataGridCheckBoxColumn.HeaderStyle>
-                    <DataGridCheckBoxColumn.ElementStyle>
-                        <Style TargetType="CheckBox">
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
                         </Style>
-                    </DataGridCheckBoxColumn.ElementStyle>
-                </DataGridCheckBoxColumn>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Border>

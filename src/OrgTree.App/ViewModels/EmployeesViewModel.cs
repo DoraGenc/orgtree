@@ -27,7 +27,12 @@ public partial class EmployeesViewModel
                 Name = $"{employee.LastName}, {employee.FirstName}",
                 PhoneNumber = employee.PhoneNumber,
                 DepartmentName = department?.Name,
-                IsDepartmentHead = employee.DepartmentHead == true
+                DepartmentHead = employee.DepartmentHead switch
+                {
+                    true => "Ja",
+                    false => "Nein",
+                    null => null
+                }
             });
         }
     }

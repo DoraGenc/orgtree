@@ -10,16 +10,33 @@
                 <DataGridTemplateColumn Header="Farbe">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Border Width="20" Height="20"
-                                    Background="{Binding ColorHex}"
-                                    BorderBrush="Black" BorderThickness="1"/>
+                            <Grid>
+                                <Border x:Name="Swatch"
+                                        Width="20" Height="20"
+                                        Background="{Binding ColorHex}"
+                                        BorderBrush="Black" BorderThickness="1"/>
+                                <TextBlock x:Name="Empty"
+                                           Text="-"
+                                           HorizontalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding ColorHex}" Value="{x:Null}">
+                                    <Setter TargetName="Swatch" Property="Visibility" Value="Collapsed"/>
+                                    <Setter TargetName="Empty" Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="AbteilungsLeiterIn" Binding="{Binding LeaderName}"/>
-                <DataGridTextColumn Header="Übergeordnete Abteilung" Binding="{Binding ParentDepartmentName}"/>
+                <DataGridTextColumn Header="AbteilungsLeiterIn"
+                                    Binding="{Binding LeaderName, TargetNullValue=-}"
+                                    ElementStyle="{StaticResource CellText}"/>
+                <DataGridTextColumn Header="Übergeordnete Abteilung"
+                                    Binding="{Binding ParentDepartmentName, TargetNullValue=-}"
+                                    ElementStyle="{StaticResource CellText}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Border>
