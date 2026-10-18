@@ -61,7 +61,7 @@
         </Style>
     </Window.Resources>
 
-    <TabControl>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex}">
         <TabItem Grid.Column="0" Background="#E6FFD9">
             <TabItem.Header>
                 <Image Source="{StaticResource LogoImage}" Width="48" Height="48"/>
