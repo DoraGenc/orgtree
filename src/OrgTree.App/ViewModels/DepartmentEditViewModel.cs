@@ -11,6 +11,12 @@ public partial class DepartmentEditViewModel : ObservableObject
 
     public string Heading => _departmentId == null ? "Erstellen" : "Editieren";
 
+    public int? Id => _departmentId;
+
+    public bool HasId => _departmentId != null;
+
+    public string DisplayName { get; } = "";
+
     public ObservableCollection<SelectOption> Leaders { get; } = new();
 
     public ObservableCollection<SelectOption> ParentDepartments { get; } = new();
@@ -77,6 +83,7 @@ public partial class DepartmentEditViewModel : ObservableObject
         var department = departments.FirstOrDefault(d => d.Id == departmentId)
             ?? throw new InvalidOperationException($"Abteilung {departmentId} existiert nicht.");
 
+        DisplayName = department.Name;
         Name = department.Name;
         ColorHex = department.ColorHex ?? "";
         SelectedLeader = Leaders.FirstOrDefault(o => o.Id == department.LeaderId) ?? Leaders[0];

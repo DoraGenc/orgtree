@@ -1,0 +1,48 @@
+<UserControl x:Class="OrgTree.App.Views.DepartmentForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <StackPanel Visibility="{Binding HasId, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="Id" Style="{StaticResource FieldLabel}"/>
+            <TextBox Text="{Binding Id, Mode=OneWay}" Style="{StaticResource ReadOnlyField}"/>
+        </StackPanel>
+
+        <TextBlock Text="Name" Style="{StaticResource FieldLabel}"/>
+        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Text="Farbe" Style="{StaticResource FieldLabel}"/>
+        <DockPanel>
+            <Border DockPanel.Dock="Right"
+                    Width="32"
+                    Margin="8,0,0,0"
+                    Background="{Binding ColorPreview}"
+                    BorderBrush="Black"
+                    BorderThickness="1"/>
+            <TextBox Text="{Binding ColorHex, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <TextBlock Text="{Binding ColorError}"
+                   Foreground="#C0392B"
+                   TextWrapping="Wrap"
+                   Margin="0,4,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ColorError}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <TextBlock Text="AbteilungsleiterIn" Style="{StaticResource FieldLabel}"/>
+        <ComboBox ItemsSource="{Binding Leaders}"
+                  SelectedItem="{Binding SelectedLeader}"
+                  DisplayMemberPath="Name"/>
+
+        <TextBlock Text="Übergeordnete Abteilung" Style="{StaticResource FieldLabel}"/>
+        <ComboBox ItemsSource="{Binding ParentDepartments}"
+                  SelectedItem="{Binding SelectedParentDepartment}"
+                  DisplayMemberPath="Name"/>
+    </StackPanel>
+</UserControl>

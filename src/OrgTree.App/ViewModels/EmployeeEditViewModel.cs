@@ -11,6 +11,12 @@ public partial class EmployeeEditViewModel : ObservableObject
 
     public string Heading => _employeeId == null ? "Erstellen" : "Editieren";
 
+    public int? Id => _employeeId;
+
+    public bool HasId => _employeeId != null;
+
+    public string DisplayName { get; } = "";
+
     public ObservableCollection<SelectOption> Departments { get; } = new();
 
     [ObservableProperty]
@@ -61,6 +67,7 @@ public partial class EmployeeEditViewModel : ObservableObject
         var employee = db.Employees.Find(employeeId)
             ?? throw new InvalidOperationException($"MitarbeiterIn {employeeId} existiert nicht.");
 
+        DisplayName = $"{employee.LastName}, {employee.FirstName}";
         LastName = employee.LastName;
         FirstName = employee.FirstName;
         PhoneNumber = employee.PhoneNumber ?? "";

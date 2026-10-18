@@ -1,0 +1,37 @@
+<UserControl x:Class="OrgTree.App.Views.EmployeeForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <StackPanel Visibility="{Binding HasId, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="Id" Style="{StaticResource FieldLabel}"/>
+            <TextBox Text="{Binding Id, Mode=OneWay}" Style="{StaticResource ReadOnlyField}"/>
+        </StackPanel>
+
+        <TextBlock Text="Name" Style="{StaticResource FieldLabel}"/>
+        <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Text="Vorname" Style="{StaticResource FieldLabel}"/>
+        <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Text="Telefonnummer" Style="{StaticResource FieldLabel}"/>
+        <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Text="Abteilung" Style="{StaticResource FieldLabel}" Margin="0,28,0,4"/>
+        <ComboBox ItemsSource="{Binding Departments}"
+                  SelectedItem="{Binding SelectedDepartment}"
+                  DisplayMemberPath="Name"
+                  IsEnabled="{Binding HasDepartments}"/>
+        <TextBlock Text="Es gibt noch keine Abteilungen. Lege zuerst eine im Tab Abteilungen an."
+                   Foreground="#C0392B"
+                   TextWrapping="Wrap"
+                   Margin="0,4,0,0"
+                   Visibility="{Binding HasNoDepartments, Converter={StaticResource BoolToVisibility}}"/>
+
+        <CheckBox Content="AbteilungsleiterIn"
+                  IsChecked="{Binding IsDepartmentHead}"
+                  IsEnabled="{Binding CanBeDepartmentHead}"
+                  FontSize="16"
+                  VerticalContentAlignment="Center"
+                  Margin="0,16,0,0"/>
+    </StackPanel>
+</UserControl>

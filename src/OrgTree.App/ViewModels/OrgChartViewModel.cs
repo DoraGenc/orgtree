@@ -5,8 +5,6 @@ namespace OrgTree.App.ViewModels;
 
 public class OrgChartViewModel
 {
-    private const string DefaultBoxColor = "#EEEEEE";
-
     public ObservableCollection<OrgChartNode> Roots { get; } = new();
 
     public void Load()
@@ -51,7 +49,7 @@ public class OrgChartViewModel
             {
                 Name = department.Name,
                 LeaderName = leader == null ? null : $"{leader.FirstName} {leader.LastName}",
-                BoxColor = department.ColorHex ?? DefaultBoxColor,
+                BoxColor = department.ColorHex ?? DepartmentColors.Default,
                 HasParent = hasParent
             };
 

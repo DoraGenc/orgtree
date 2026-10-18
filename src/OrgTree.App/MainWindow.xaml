@@ -74,7 +74,7 @@
             <views:EmployeesView/>
         </TabItem>
         <TabItem Grid.Column="3" Header="Baumansicht">
-            <views:DepartmentsView/>
+            <views:HierarchyView/>
         </TabItem>
         <TabItem Grid.Column="4" Header="Organigramm">
             <views:OrgChartView/>
