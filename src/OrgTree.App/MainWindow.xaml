@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:OrgTree.App"
         xmlns:views="clr-namespace:OrgTree.App.Views"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="orgtree"
+        Icon="{StaticResource LogoImage}"
         Background="#C3DBB6">
 
     <Window.Resources>
@@ -63,7 +64,7 @@
     <TabControl>
         <TabItem Grid.Column="0" Background="#E6FFD9">
             <TabItem.Header>
-                <TextBlock Text="🌳" FontSize="36"/>
+                <Image Source="{StaticResource LogoImage}" Width="48" Height="48"/>
             </TabItem.Header>
             <views:StartView/>
         </TabItem>

@@ -4,6 +4,30 @@
              xmlns:local="clr-namespace:OrgTree.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <DrawingImage x:Key="LogoImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="Transparent" Geometry="M7,10 H93 V96 H7 Z"/>
+                    <GeometryDrawing Brush="#7ED957">
+                        <GeometryDrawing.Geometry>
+                            <EllipseGeometry Center="50,29.7" RadiusX="17.2" RadiusY="17.2"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="#925C3A" Geometry="M39.9,49 H60 V93.3 H39.9 Z"/>
+                    <GeometryDrawing Brush="#C1FF72">
+                        <GeometryDrawing.Geometry>
+                            <EllipseGeometry Center="32.8,49.2" RadiusX="17.2" RadiusY="17.2"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="#00BF63">
+                        <GeometryDrawing.Geometry>
+                            <EllipseGeometry Center="67.2,49.2" RadiusX="17.2" RadiusY="17.2"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 
         <Style x:Key="FieldLabel" TargetType="TextBlock">
