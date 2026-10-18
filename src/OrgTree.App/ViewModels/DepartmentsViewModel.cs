@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using OrgTree.App.Views;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
@@ -30,6 +32,20 @@ public partial class DepartmentsViewModel
                 ParentDepartmentName = parent?.Name,
                 ColorHex = department.ColorHex
             });
+        }
+    }
+
+    [RelayCommand]
+    private void Edit(DepartmentRow row)
+    {
+        var window = new DepartmentEditWindow(new DepartmentEditViewModel(row.Id))
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (window.ShowDialog() == true)
+        {
+            Load();
         }
     }
 

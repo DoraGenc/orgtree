@@ -9,7 +9,7 @@ public partial class EmployeeEditViewModel : ObservableObject
 {
     private readonly int _employeeId;
 
-    public ObservableCollection<DepartmentOption> Departments { get; } = new();
+    public ObservableCollection<SelectOption> Departments { get; } = new();
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -24,7 +24,7 @@ public partial class EmployeeEditViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanBeDepartmentHead))]
-    private DepartmentOption? _selectedDepartment;
+    private SelectOption? _selectedDepartment;
 
     [ObservableProperty]
     private bool _isDepartmentHead;
@@ -46,10 +46,10 @@ public partial class EmployeeEditViewModel : ObservableObject
         var employee = db.Employees.Find(employeeId)
             ?? throw new InvalidOperationException($"MitarbeiterIn {employeeId} existiert nicht.");
 
-        Departments.Add(new DepartmentOption(null, "auswählen..."));
+        Departments.Add(new SelectOption(null, "auswählen..."));
         foreach (var department in db.Departments.OrderBy(d => d.Name))
         {
-            Departments.Add(new DepartmentOption(department.Id, department.Name));
+            Departments.Add(new SelectOption(department.Id, department.Name));
         }
 
         LastName = employee.LastName;
@@ -59,7 +59,7 @@ public partial class EmployeeEditViewModel : ObservableObject
         IsDepartmentHead = employee.DepartmentHead == true && CanBeDepartmentHead;
     }
 
-    partial void OnSelectedDepartmentChanged(DepartmentOption? value)
+    partial void OnSelectedDepartmentChanged(SelectOption? value)
     {
         if (value?.Id == null)
         {

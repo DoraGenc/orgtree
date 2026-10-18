@@ -8,28 +8,6 @@
         WindowStartupLocation="CenterOwner"
         Background="#F9ECEC">
 
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-
-        <Style x:Key="FieldLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#B8A4A4"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Margin" Value="0,12,0,4"/>
-        </Style>
-
-        <Style TargetType="TextBox">
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Padding" Value="4"/>
-            <Setter Property="BorderBrush" Value="Black"/>
-        </Style>
-
-        <Style x:Key="DialogButton" TargetType="Button">
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Padding" Value="16,6"/>
-            <Setter Property="Margin" Value="8,0,0,0"/>
-        </Style>
-    </Window.Resources>
-
     <StackPanel Margin="28">
         <TextBlock Text="Editieren" FontSize="28" FontWeight="Bold"/>
 
@@ -46,9 +24,7 @@
         <ComboBox ItemsSource="{Binding Departments}"
                   SelectedItem="{Binding SelectedDepartment}"
                   DisplayMemberPath="Name"
-                  IsEnabled="{Binding HasDepartments}"
-                  FontSize="16"
-                  Padding="6,4"/>
+                  IsEnabled="{Binding HasDepartments}"/>
         <TextBlock Text="Es gibt noch keine Abteilungen. Lege zuerst eine im Tab Abteilungen an."
                    Foreground="#C0392B"
                    TextWrapping="Wrap"
