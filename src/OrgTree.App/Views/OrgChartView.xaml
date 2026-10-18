@@ -1,0 +1,79 @@
+<UserControl x:Class="OrgTree.App.Views.OrgChartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OrgTree.App.ViewModels">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="ConnectorBrush" Color="Black"/>
+
+        <ItemsPanelTemplate x:Key="HorizontalPanel">
+            <StackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+
+        <DataTemplate DataType="{x:Type vm:OrgChartNode}">
+            <StackPanel>
+                <Grid Height="34"
+                      Visibility="{Binding HasParent, Converter={StaticResource BoolToVisibility}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Grid.Column="0"
+                               Height="3"
+                               VerticalAlignment="Top"
+                               Fill="{StaticResource ConnectorBrush}"
+                               Visibility="{Binding ShowLeftLine, Converter={StaticResource BoolToVisibility}}"/>
+                    <Rectangle Grid.Column="1"
+                               Height="3"
+                               VerticalAlignment="Top"
+                               Fill="{StaticResource ConnectorBrush}"
+                               Visibility="{Binding ShowRightLine, Converter={StaticResource BoolToVisibility}}"/>
+                    <Rectangle Grid.ColumnSpan="2"
+                               Width="3"
+                               HorizontalAlignment="Center"
+                               Fill="{StaticResource ConnectorBrush}"/>
+                    <Path Grid.ColumnSpan="2"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Bottom"
+                          Data="M0,0 L7,8 L14,0"
+                          Stroke="{StaticResource ConnectorBrush}"
+                          StrokeThickness="3"/>
+                </Grid>
+
+                <Border Background="{Binding BoxColor}"
+                        MinWidth="200"
+                        Padding="16,12"
+                        Margin="20,0"
+                        HorizontalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding LeaderName, TargetNullValue=-}"
+                                   FontSize="18"
+                                   Margin="0,16,0,0"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Rectangle Width="3"
+                           Height="20"
+                           HorizontalAlignment="Center"
+                           Fill="{StaticResource ConnectorBrush}"
+                           Visibility="{Binding HasChildren, Converter={StaticResource BoolToVisibility}}"/>
+
+                <ItemsControl ItemsSource="{Binding Children}"
+                              ItemsPanel="{StaticResource HorizontalPanel}"
+                              HorizontalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding Roots}"
+                      ItemsPanel="{StaticResource HorizontalPanel}"
+                      HorizontalAlignment="Center"
+                      Margin="50"/>
+    </ScrollViewer>
+</UserControl>
