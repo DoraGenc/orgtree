@@ -40,9 +40,20 @@ public partial class EmployeesViewModel
     }
 
     [RelayCommand]
+    private void Create()
+    {
+        OpenEditWindow(new EmployeeEditViewModel());
+    }
+
+    [RelayCommand]
     private void Edit(EmployeeRow row)
     {
-        var window = new EmployeeEditWindow(new EmployeeEditViewModel(row.Id))
+        OpenEditWindow(new EmployeeEditViewModel(row.Id));
+    }
+
+    private void OpenEditWindow(EmployeeEditViewModel viewModel)
+    {
+        var window = new EmployeeEditWindow(viewModel)
         {
             Owner = Application.Current.MainWindow
         };

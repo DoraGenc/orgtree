@@ -7,7 +7,9 @@ namespace OrgTree.App.ViewModels;
 
 public partial class EmployeeEditViewModel : ObservableObject
 {
-    private readonly int _employeeId;
+    private readonly int? _employeeId;
+
+    public string Heading => _employeeId == null ? "Erstellen" : "Editieren";
 
     public ObservableCollection<SelectOption> Departments { get; } = new();
 
@@ -37,20 +39,27 @@ public partial class EmployeeEditViewModel : ObservableObject
 
     public event Action<bool>? CloseRequested;
 
-    public EmployeeEditViewModel(int employeeId)
+    public EmployeeEditViewModel(int? employeeId = null)
     {
         _employeeId = employeeId;
 
         using var db = new OrgTreeContext();
-
-        var employee = db.Employees.Find(employeeId)
-            ?? throw new InvalidOperationException($"MitarbeiterIn {employeeId} existiert nicht.");
 
         Departments.Add(new SelectOption(null, "auswählen..."));
         foreach (var department in db.Departments.OrderBy(d => d.Name))
         {
             Departments.Add(new SelectOption(department.Id, department.Name));
         }
+
+        SelectedDepartment = Departments[0];
+
+        if (employeeId == null)
+        {
+            return;
+        }
+
+        var employee = db.Employees.Find(employeeId)
+            ?? throw new InvalidOperationException($"MitarbeiterIn {employeeId} existiert nicht.");
 
         LastName = employee.LastName;
         FirstName = employee.FirstName;
@@ -77,17 +86,28 @@ public partial class EmployeeEditViewModel : ObservableObject
     {
         using var db = new OrgTreeContext();
 
-        var employee = db.Employees.Find(_employeeId);
-        if (employee == null)
+        Employee? employee;
+        if (_employeeId == null)
         {
-            CloseRequested?.Invoke(false);
-            return;
+            employee = new Employee { LastName = LastName.Trim(), FirstName = FirstName.Trim() };
+            db.Employees.Add(employee);
+            db.SaveChanges();
+        }
+        else
+        {
+            employee = db.Employees.Find(_employeeId);
+            if (employee == null)
+            {
+                CloseRequested?.Invoke(false);
+                return;
+            }
         }
 
+        var employeeId = employee.Id;
         var newDepartmentId = SelectedDepartment?.Id;
         var ledDepartmentId = IsDepartmentHead ? newDepartmentId : null;
 
-        foreach (var department in db.Departments.Where(d => d.LeaderId == _employeeId && d.Id != ledDepartmentId))
+        foreach (var department in db.Departments.Where(d => d.LeaderId == employeeId && d.Id != ledDepartmentId))
         {
             department.LeaderId = null;
         }
@@ -97,12 +117,12 @@ public partial class EmployeeEditViewModel : ObservableObject
             var department = db.Departments.Find(ledDepartmentId);
             if (department != null)
             {
-                foreach (var other in db.Employees.Where(e => e.DepartmentId == department.Id && e.Id != _employeeId && e.DepartmentHead == true))
+                foreach (var other in db.Employees.Where(e => e.DepartmentId == department.Id && e.Id != employeeId && e.DepartmentHead == true))
                 {
                     other.DepartmentHead = false;
                 }
 
-                department.LeaderId = _employeeId;
+                department.LeaderId = employeeId;
             }
         }
 
