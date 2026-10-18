@@ -12,6 +12,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Assets\**\*.png" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
