@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="orgtree" width="400">
+</p>
+
 # wpf-hr-software
 
 HR-Software mit Organigramm-Baum, gebaut als WPF-Desktop-App (.NET 10, nur Windows).
