@@ -7,6 +7,11 @@ public partial class Department
     [GeneratedRegex("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")]
     private static partial Regex HexColorPattern();
 
+    public static bool IsValidColorHex(string? value)
+    {
+        return value is null || HexColorPattern().IsMatch(value);
+    }
+
     public int Id { get; set; }
     required public string Name { get; set; }
     public int? LeaderId { get; set; }
@@ -19,7 +24,7 @@ public partial class Department
         get => _colorHex;
         set
         {
-            if (value is not null && !HexColorPattern().IsMatch(value))
+            if (!IsValidColorHex(value))
             {
                 throw new ArgumentException(
                     $"'{value}' ist keine gueltige Hex-Farbe. Erwartet: #RGB, #RRGGBB oder #AARRGGBB.",

@@ -36,9 +36,20 @@ public partial class DepartmentsViewModel
     }
 
     [RelayCommand]
+    private void Create()
+    {
+        OpenEditWindow(new DepartmentEditViewModel());
+    }
+
+    [RelayCommand]
     private void Edit(DepartmentRow row)
     {
-        var window = new DepartmentEditWindow(new DepartmentEditViewModel(row.Id))
+        OpenEditWindow(new DepartmentEditViewModel(row.Id));
+    }
+
+    private void OpenEditWindow(DepartmentEditViewModel viewModel)
+    {
+        var window = new DepartmentEditWindow(viewModel)
         {
             Owner = Application.Current.MainWindow
         };
