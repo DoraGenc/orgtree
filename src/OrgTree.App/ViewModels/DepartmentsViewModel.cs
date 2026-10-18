@@ -8,12 +8,7 @@ public partial class DepartmentsViewModel
 {
     public ObservableCollection<DepartmentRow> Departments { get; } = new();
 
-    public DepartmentsViewModel()
-    {
-        Load();
-    }
-
-    private void Load()
+    public void Load()
     {
         Departments.Clear();
 

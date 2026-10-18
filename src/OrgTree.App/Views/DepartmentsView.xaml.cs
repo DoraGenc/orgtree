@@ -8,6 +8,8 @@ public partial class DepartmentsView : UserControl
     public DepartmentsView()
     {
         InitializeComponent();
-        DataContext = new DepartmentsViewModel();
+        var viewModel = new DepartmentsViewModel();
+        DataContext = viewModel;
+        Loaded += (_, _) => viewModel.Load();
     }
 }

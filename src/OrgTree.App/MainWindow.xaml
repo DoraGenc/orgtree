@@ -70,8 +70,8 @@
         <TabItem Grid.Column="1" Header="Abteilungen">
             <views:DepartmentsView/>
         </TabItem>
-         <TabItem Grid.Column="2" Header="MitarbeiterInnen">
-            <views:DepartmentsView/>
+        <TabItem Grid.Column="2" Header="MitarbeiterInnen">
+            <views:EmployeesView/>
         </TabItem>
         <TabItem Grid.Column="3" Header="Baumansicht">
             <views:DepartmentsView/>
