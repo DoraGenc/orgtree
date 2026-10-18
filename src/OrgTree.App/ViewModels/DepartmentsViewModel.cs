@@ -1,14 +1,22 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public class DepartmentsViewModel
+public partial class DepartmentsViewModel
 {
     public ObservableCollection<DepartmentRow> Departments { get; } = new();
 
     public DepartmentsViewModel()
     {
+        Load();
+    }
+
+    private void Load()
+    {
+        Departments.Clear();
+
         using var db = new OrgTreeContext();
 
         var departments = db.Departments.ToList();
@@ -28,5 +36,32 @@ public class DepartmentsViewModel
                 ColorHex = department.ColorHex
             });
         }
+    }
+
+    [RelayCommand]
+    private void Delete(DepartmentRow row)
+    {
+        using var db = new OrgTreeContext();
+
+        var department = db.Departments.Find(row.Id);
+        if (department == null)
+        {
+            return;
+        }
+
+        foreach (var child in db.Departments.Where(d => d.ParentDepartmentId == row.Id))
+        {
+            child.ParentDepartmentId = null;
+        }
+
+        foreach (var employee in db.Employees.Where(e => e.DepartmentId == row.Id))
+        {
+            employee.DepartmentId = null;
+        }
+
+        db.Departments.Remove(department);
+        db.SaveChanges();
+
+        Load();
     }
 }

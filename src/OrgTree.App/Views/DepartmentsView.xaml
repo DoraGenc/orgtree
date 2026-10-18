@@ -6,6 +6,21 @@
                   AutoGenerateColumns="False"
                   IsReadOnly="True">
             <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="&#xE74D;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Padding="6,4"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    ToolTip="Löschen"
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Farbe">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
