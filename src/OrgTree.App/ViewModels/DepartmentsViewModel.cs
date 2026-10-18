@@ -1,14 +1,18 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OrgTree.App.Views;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class DepartmentsViewModel
+public partial class DepartmentsViewModel : ObservableObject
 {
     public ObservableCollection<DepartmentRow> Departments { get; } = new();
+
+    [ObservableProperty]
+    private bool _isEmpty;
 
     public void Load()
     {
@@ -33,6 +37,8 @@ public partial class DepartmentsViewModel
                 ColorHex = department.ColorHex
             });
         }
+
+        IsEmpty = Departments.Count == 0;
     }
 
     [RelayCommand]

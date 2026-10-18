@@ -8,34 +8,47 @@
                     ToolTip="MitarbeiterIn erstellen"
                     Command="{Binding CreateCommand}"/>
 
-            <DataGrid ItemsSource="{Binding Employees}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn CellTemplate="{StaticResource RowActionsTemplate}"/>
-                    <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Telefonnummer"
-                                        Binding="{Binding PhoneNumber, TargetNullValue=-}"
-                                        ElementStyle="{StaticResource CellText}"/>
-                    <DataGridTextColumn Header="Abteilung"
-                                        Binding="{Binding DepartmentName, TargetNullValue=-}"
-                                        ElementStyle="{StaticResource CellText}"/>
-                    <DataGridTextColumn Header="AbteilungsleiterIn?"
-                                        Binding="{Binding DepartmentHead, TargetNullValue=-}">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid>
+                <DataGrid ItemsSource="{Binding Employees}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CellTemplate="{StaticResource RowActionsTemplate}"/>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="Telefonnummer"
+                                            Binding="{Binding PhoneNumber, TargetNullValue=-}"
+                                            ElementStyle="{StaticResource CellText}"/>
+                        <DataGridTextColumn Header="Abteilung"
+                                            Binding="{Binding DepartmentName, TargetNullValue=-}"
+                                            ElementStyle="{StaticResource CellText}"/>
+                        <DataGridTextColumn Header="AbteilungsleiterIn?"
+                                            Binding="{Binding DepartmentHead, TargetNullValue=-}">
+                            <DataGridTextColumn.HeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.HeaderStyle>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="520"
+                            IsHitTestVisible="False"
+                            Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Text="Noch keine MitarbeiterInnen vorhanden."
+                               Style="{StaticResource EmptyStateTitle}"/>
+                    <TextBlock Text="Klicke oben rechts auf das +, um eine MitarbeiterIn hinzuzufügen."
+                               Style="{StaticResource EmptyStateText}"/>
+                </StackPanel>
+            </Grid>
         </DockPanel>
     </Border>
 </UserControl>

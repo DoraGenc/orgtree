@@ -1,14 +1,18 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OrgTree.App.Views;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class EmployeesViewModel
+public partial class EmployeesViewModel : ObservableObject
 {
     public ObservableCollection<EmployeeRow> Employees { get; } = new();
+
+    [ObservableProperty]
+    private bool _isEmpty;
 
     public void Load()
     {
@@ -37,6 +41,8 @@ public partial class EmployeesViewModel
                 }
             });
         }
+
+        IsEmpty = Employees.Count == 0;
     }
 
     [RelayCommand]

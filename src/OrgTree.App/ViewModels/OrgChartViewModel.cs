@@ -1,11 +1,15 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public class OrgChartViewModel
+public partial class OrgChartViewModel : ObservableObject
 {
     public ObservableCollection<OrgChartNode> Roots { get; } = new();
+
+    [ObservableProperty]
+    private bool _isEmpty;
 
     public void Load()
     {
@@ -26,6 +30,8 @@ public class OrgChartViewModel
         {
             Roots.Add(node);
         }
+
+        IsEmpty = Roots.Count == 0;
     }
 
     private static List<OrgChartNode> BuildNodes(

@@ -11,10 +11,14 @@ public partial class HierarchyViewModel : ObservableObject
     public ObservableCollection<DepartmentHierarchyNode> Roots { get; } = new();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasNoDetail))]
+    [NotifyPropertyChangedFor(nameof(ShowSelectionHint))]
     private object? _detail;
 
-    public bool HasNoDetail => Detail == null;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowSelectionHint))]
+    private bool _isEmpty;
+
+    public bool ShowSelectionHint => Detail == null && !IsEmpty;
 
     public void Load()
     {
@@ -50,6 +54,8 @@ public partial class HierarchyViewModel : ObservableObject
 
             Roots.Add(node);
         }
+
+        IsEmpty = Roots.Count == 0;
     }
 
     private static DepartmentHierarchyNode BuildDepartment(

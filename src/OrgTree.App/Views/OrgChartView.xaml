@@ -70,10 +70,22 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding Roots}"
-                      ItemsPanel="{StaticResource HorizontalPanel}"
-                      HorizontalAlignment="Center"
-                      Margin="50"/>
-    </ScrollViewer>
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Roots}"
+                          ItemsPanel="{StaticResource HorizontalPanel}"
+                          HorizontalAlignment="Center"
+                          Margin="50"/>
+        </ScrollViewer>
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MaxWidth="520"
+                    Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="Keine Abteilungsstruktur gefunden."
+                       Style="{StaticResource EmptyStateTitle}"/>
+            <TextBlock Text="Das Organigramm erscheint, sobald eine Abteilung eine Unterabteilung hat."
+                       Style="{StaticResource EmptyStateText}"/>
+        </StackPanel>
+    </Grid>
 </UserControl>

@@ -65,6 +65,16 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <TextBlock Grid.Column="0"
+                   Panel.ZIndex="1"
+                   Text="Keine Abteilungen oder MitarbeiterInnen gefunden."
+                   Foreground="#A6A6A6"
+                   FontSize="18"
+                   TextWrapping="Wrap"
+                   Margin="24"
+                   IsHitTestVisible="False"
+                   Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}"/>
+
         <TreeView Grid.Column="0"
                   ItemsSource="{Binding Roots}"
                   Background="#EEF5E9"
@@ -88,7 +98,7 @@
                 <TextBlock Text="Wähle links eine Abteilung oder MitarbeiterIn aus."
                            Foreground="#A6A6A6"
                            FontSize="18"
-                           Visibility="{Binding HasNoDetail, Converter={StaticResource BoolToVisibility}}"/>
+                           Visibility="{Binding ShowSelectionHint, Converter={StaticResource BoolToVisibility}}"/>
                 <ContentControl Content="{Binding Detail}"
                                 MaxWidth="520"
                                 HorizontalAlignment="Left"/>
