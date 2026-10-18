@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using OrgTree.App.Views;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
@@ -34,6 +36,20 @@ public partial class EmployeesViewModel
                     null => null
                 }
             });
+        }
+    }
+
+    [RelayCommand]
+    private void Edit(EmployeeRow row)
+    {
+        var window = new EmployeeEditWindow(new EmployeeEditViewModel(row.Id))
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (window.ShowDialog() == true)
+        {
+            Load();
         }
     }
 
