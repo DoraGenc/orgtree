@@ -20,7 +20,7 @@
                                     <Grid>
                                         <Border x:Name="Swatch"
                                                 Width="20" Height="20"
-                                                Background="{Binding ColorHex}"
+                                                Background="{Binding ColorHex, TargetNullValue=Transparent}"
                                                 BorderBrush="Black" BorderThickness="1"/>
                                         <TextBlock x:Name="Empty"
                                                    Text="-"

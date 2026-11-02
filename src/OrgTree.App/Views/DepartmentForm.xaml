@@ -15,7 +15,7 @@
             <Border DockPanel.Dock="Right"
                     Width="32"
                     Margin="8,0,0,0"
-                    Background="{Binding ColorPreview}"
+                    Background="{Binding ColorPreview, TargetNullValue=Transparent}"
                     BorderBrush="Black"
                     BorderThickness="1"/>
             <TextBox Text="{Binding ColorHex, UpdateSourceTrigger=PropertyChanged}"/>
