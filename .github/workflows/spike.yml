@@ -1,0 +1,57 @@
+name: spike
+
+on:
+  push:
+    branches: [vrt-status-spike]
+
+permissions:
+  checks: write
+
+jobs:
+  check-runs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      SHA: ${{ github.sha }}
+      PR_URL: https://github.com/${{ github.repository }}/pull/10
+    steps:
+      - name: Create a check run that stays in_progress
+        run: |
+          gh api "repos/$REPO/check-runs" \
+            -f name="spike-in-progress" \
+            -f head_sha="$SHA" \
+            -f status="in_progress" \
+            -f details_url="$PR_URL" \
+            -f "output[title]=18 differences waiting for approval in VRT" \
+            -f "output[summary]=Check run with status in_progress." \
+            --jq '.id'
+
+      - name: Create a check run with conclusion action_required
+        id: action-required
+        run: |
+          id=$(gh api "repos/$REPO/check-runs" \
+            -f name="visual-regression" \
+            -f head_sha="$SHA" \
+            -f status="completed" \
+            -f conclusion="action_required" \
+            -f details_url="$PR_URL" \
+            -f "output[title]=18 differences waiting for approval in VRT" \
+            -f "output[summary]=Review the differences in the Visual Regression Tracker. This check turns green by itself once every difference is approved." \
+            -f "actions[][label]=Open in VRT" \
+            -f "actions[][description]=Open the VRT build" \
+            -f "actions[][identifier]=open_vrt" \
+            --jq '.id')
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - name: Wait so the states can be looked at
+        run: sleep 300
+
+      - name: Change the action_required check run to success
+        run: |
+          gh api -X PATCH "repos/$REPO/check-runs/${{ steps.action-required.outputs.id }}" \
+            -f conclusion="success" \
+            -f "output[title]=All differences approved" \
+            -f "output[summary]=Every difference was approved in VRT." \
+            --jq '{status, conclusion}'
