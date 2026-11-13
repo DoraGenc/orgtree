@@ -17,7 +17,7 @@ public partial class OrgChartViewModel : ObservableObject
 
         using var db = new OrgTreeContext();
 
-        var departments = db.Departments.OrderBy(d => d.Name).ToList();
+        var departments = db.Departments.OrderBy(department => department.Name).ToList();
         var employees = db.Employees.ToList();
         var departmentIds = departments.Select(d => d.Id).ToHashSet();
 

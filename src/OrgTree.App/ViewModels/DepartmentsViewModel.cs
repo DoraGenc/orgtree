@@ -82,7 +82,7 @@ public partial class DepartmentsViewModel : ObservableObject
             child.ParentDepartmentId = null;
         }
 
-        foreach (var employee in db.Employees.Where(e => e.DepartmentId == row.Id))
+        foreach (var employee in db.Employees.Where(employee => employee.DepartmentId == row.Id))
         {
             employee.DepartmentId = null;
         }

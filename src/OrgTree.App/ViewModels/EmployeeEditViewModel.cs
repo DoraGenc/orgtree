@@ -40,7 +40,7 @@ public partial class EmployeeEditViewModel : ObservableObject
 
     public bool CanBeDepartmentHead => SelectedDepartment?.Id != null;
 
-    public bool HasDepartments => Departments.Count > 1;
+    public bool HasDepartments => Departments.Any(department => department.Id != null);
 
     public bool HasNoDepartments => !HasDepartments;
 
@@ -52,8 +52,8 @@ public partial class EmployeeEditViewModel : ObservableObject
 
         using var db = new OrgTreeContext();
 
-        Departments.Add(new SelectOption(null, "auswählen..."));
-        foreach (var department in db.Departments.OrderBy(d => d.Name))
+        Departments.Add(new SelectOption(null, "Keine Abteilung zugeordnet"));
+        foreach (var department in db.Departments.OrderBy(department => department.Name))
         {
             Departments.Add(new SelectOption(department.Id, department.Name));
             if (department.LeaderId == employeeId)
@@ -76,7 +76,8 @@ public partial class EmployeeEditViewModel : ObservableObject
         LastName = employee.LastName;
         FirstName = employee.FirstName;
         PhoneNumber = employee.PhoneNumber ?? "";
-        SelectedDepartment = Departments.FirstOrDefault(o => o.Id == employee.DepartmentId) ?? Departments[0];
+        SelectedDepartment = Departments.FirstOrDefault(option => option.Id == employee.DepartmentId)
+            ?? Departments[0];
     }
 
     partial void OnSelectedDepartmentChanged(SelectOption? value)
@@ -113,7 +114,7 @@ public partial class EmployeeEditViewModel : ObservableObject
 
         var employeeId = employee.Id;
         var newDepartmentId = SelectedDepartment?.Id;
-        var ledDepartmentId = IsDepartmentHead ? newDepartmentId : null;
+        int? ledDepartmentId = IsDepartmentHead ? newDepartmentId : null;
 
         foreach (var department in db.Departments.Where(d => d.LeaderId == employeeId && d.Id != ledDepartmentId))
         {

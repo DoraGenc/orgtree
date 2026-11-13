@@ -21,7 +21,7 @@
                   SelectedItem="{Binding SelectedDepartment}"
                   DisplayMemberPath="Name"
                   IsEnabled="{Binding HasDepartments}"/>
-        <TextBlock Text="Es gibt noch keine Abteilungen. Lege zuerst eine im Tab Abteilungen an."
+        <TextBlock Text="Es gibt noch keine Abteilungen. Mitarbeitende werden zunächst ohne Abteilung gespeichert."
                    Foreground="#C0392B"
                    TextWrapping="Wrap"
                    Margin="0,4,0,0"
