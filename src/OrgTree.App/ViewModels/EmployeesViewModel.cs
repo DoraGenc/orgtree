@@ -72,6 +72,19 @@ public partial class EmployeesViewModel : ObservableObject
     [RelayCommand]
     private void Delete(EmployeeRow row)
     {
+        var result = MessageBox.Show(
+            Application.Current.MainWindow,
+            $"Möchtest du „{row.Name}“ wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+            "Mitarbeiter löschen",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (result != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
         using var db = new OrgTreeContext();
 
         var employee = db.Employees.Find(row.Id);
