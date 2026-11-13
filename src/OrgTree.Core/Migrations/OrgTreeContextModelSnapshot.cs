@@ -46,9 +46,6 @@ namespace OrgTree.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool?>("DepartmentHead")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("INTEGER");
 

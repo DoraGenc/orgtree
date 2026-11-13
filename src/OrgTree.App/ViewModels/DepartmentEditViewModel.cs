@@ -143,15 +143,6 @@ public partial class DepartmentEditViewModel : ObservableObject
 
         if (department.LeaderId != newLeaderId)
         {
-            if (department.LeaderId != null)
-            {
-                var previousLeader = db.Employees.Find(department.LeaderId);
-                if (previousLeader != null)
-                {
-                    previousLeader.DepartmentHead = false;
-                }
-            }
-
             if (newLeaderId != null)
             {
                 var leader = db.Employees.Find(newLeaderId);
@@ -162,13 +153,7 @@ public partial class DepartmentEditViewModel : ObservableObject
                         otherDepartment.LeaderId = null;
                     }
 
-                    foreach (var otherHead in db.Employees.Where(e => e.DepartmentId == departmentId && e.DepartmentHead == true && e.Id != newLeaderId))
-                    {
-                        otherHead.DepartmentHead = false;
-                    }
-
                     leader.DepartmentId = departmentId;
-                    leader.DepartmentHead = true;
                 }
             }
         }

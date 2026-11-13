@@ -33,12 +33,11 @@ public partial class EmployeesViewModel : ObservableObject
                 Name = $"{employee.LastName}, {employee.FirstName}",
                 PhoneNumber = employee.PhoneNumber,
                 DepartmentName = department?.Name,
-                DepartmentHead = employee.DepartmentHead switch
-                {
-                    true => "Ja",
-                    false => "Nein",
-                    null => null
-                }
+                DepartmentHead = department == null
+                    ? null
+                    : department.LeaderId == employee.Id
+                        ? "Ja"
+                        : "Nein"
             });
         }
 
