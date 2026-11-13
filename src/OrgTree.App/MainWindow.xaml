@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         Title="orgtree"
         Icon="{StaticResource LogoImage}"
-        Background="#C3DBB6">
+        Background="#C3DBB6"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style TargetType="TabItem">
@@ -42,7 +43,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TabControl">
                         <DockPanel>
-                            <Grid DockPanel.Dock="Top" IsItemsHost="True">
+                            <Grid x:Name="HeaderHost" DockPanel.Dock="Top" IsItemsHost="True">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="140"/>
                                     <ColumnDefinition Width="*"/>
@@ -55,6 +56,11 @@
                                 <ContentPresenter ContentSource="SelectedContent"/>
                             </Border>
                         </DockPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="SelectedIndex" Value="0">
+                                <Setter TargetName="HeaderHost" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

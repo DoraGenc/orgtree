@@ -3,8 +3,90 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:OrgTree.App.ViewModels">
     <Border Padding="50">
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Bottom"
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Viewbox Grid.Row="0"
+                     Stretch="Uniform"
+                     StretchDirection="DownOnly"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock FontSize="80"
+                               Foreground="Black"
+                               HorizontalAlignment="Left">
+                        <Run Text="Willkommen bei "/><Run Text="org" Foreground="#FF5757"/><Run Text="tree!"/>
+                    </TextBlock>
+                    <TextBlock Text="Was steht heute an?"
+                               Margin="0,8,0,0"
+                               FontSize="32"
+                               Foreground="#545454"
+                               HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Abteilungen"
+                               Margin="0,40,0,0"
+                               FontSize="24"
+                               Foreground="#a6a6a6"
+                               HorizontalAlignment="Left"/>
+                    <Button Content="Abteilungen"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:AppPage.Departments}"
+                            FontSize="24"
+                            Height="60"
+                            Margin="0,8,0,0"
+                            HorizontalContentAlignment="Center"
+                            Background="#c1ff72"
+                            BorderBrush="Black"
+                            BorderThickness="1"/>
+
+                    <TextBlock Text="Mitarbeiter"
+                               Margin="0,32,0,0"
+                               FontSize="24"
+                               Foreground="#a6a6a6"
+                               HorizontalAlignment="Left"/>
+                    <Button Content="MitarbeiterInnen"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:AppPage.Employees}"
+                            FontSize="24"
+                            Height="60"
+                            Margin="0,8,0,0"
+                            HorizontalContentAlignment="Center"
+                            Background="#7ed957"
+                            BorderBrush="Black"
+                            BorderThickness="1"/>
+                    <Button Content="Baumansicht"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:AppPage.Hierarchy}"
+                            FontSize="24"
+                            Height="60"
+                            Margin="0,16,0,0"
+                            HorizontalContentAlignment="Center"
+                            Background="#7ed957"
+                            BorderBrush="Black"
+                            BorderThickness="1"/>
+
+                    <TextBlock Text="Strukturen"
+                               Margin="0,32,0,0"
+                               FontSize="24"
+                               Foreground="#a6a6a6"
+                               HorizontalAlignment="Left"/>
+                    <Button Content="Organigramm"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:AppPage.OrgChart}"
+                            FontSize="24"
+                            Height="60"
+                            Margin="0,8,0,0"
+                            HorizontalContentAlignment="Center"
+                            Background="#925c3a"
+                            BorderBrush="White"
+                            BorderThickness="1"/>
+                </StackPanel>
+            </Viewbox>
+
+            <StackPanel Grid.Row="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="0,24,0,0"
@@ -18,78 +100,6 @@
                        Height="40"
                        RenderOptions.BitmapScalingMode="HighQuality"/>
             </StackPanel>
-
-            <StackPanel>
-                <TextBlock Margin="0,100,0,0"
-                    FontSize="80"
-                    Foreground="Black"
-                    HorizontalAlignment="Left">
-                    <Run Text="Willkommen bei "/><Run Text="org" Foreground="#FF5757"/><Run Text="tree!"/>
-                </TextBlock>
-                <TextBlock Text="Was steht heute an?"
-                    Margin="0,8,0,0"
-                    FontSize="32"
-                    Foreground="#545454"
-                    HorizontalAlignment="Left"/>
-
-                <TextBlock Text="Abteilungen"
-                    Margin="0,40,0,0"
-                    FontSize="24"
-                    Foreground="#a6a6a6"
-                    HorizontalAlignment="Left"/>
-                <Button Content="Abteilungen"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="{x:Static vm:AppPage.Departments}"
-                    FontSize="24"
-                    Height="60"
-                    Margin="0,8,0,0"
-                    HorizontalContentAlignment="Center"
-                    Background="#c1ff72"
-                    BorderBrush="Black"
-                    BorderThickness="1"/>
-
-                <TextBlock Text="Mitarbeiter"
-                    Margin="0,32,0,0"
-                    FontSize="24"
-                    Foreground="#a6a6a6"
-                    HorizontalAlignment="Left"/>
-                <Button Content="MitarbeiterInnen"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="{x:Static vm:AppPage.Employees}"
-                    FontSize="24"
-                    Height="60"
-                    Margin="0,8,0,0"
-                    HorizontalContentAlignment="Center"
-                    Background="#7ed957"
-                    BorderBrush="Black"
-                    BorderThickness="1"/>
-                <Button Content="Baumansicht"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="{x:Static vm:AppPage.Hierarchy}"
-                    FontSize="24"
-                    Height="60"
-                    Margin="0,16,0,0"
-                    HorizontalContentAlignment="Center"
-                    Background="#7ed957"
-                    BorderBrush="Black"
-                    BorderThickness="1"/>
-
-                <TextBlock Text="Strukturen"
-                    Margin="0,32,0,0"
-                    FontSize="24"
-                    Foreground="#a6a6a6"
-                    HorizontalAlignment="Left"/>
-                <Button Content="Organigramm"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="{x:Static vm:AppPage.OrgChart}"
-                    FontSize="24"
-                    Height="60"
-                    Margin="0,8,0,0"
-                    HorizontalContentAlignment="Center"
-                    Background="#925c3a"
-                    BorderBrush="White"
-                    BorderThickness="1"/>
-            </StackPanel>
-        </DockPanel>
+        </Grid>
     </Border>
 </UserControl>
