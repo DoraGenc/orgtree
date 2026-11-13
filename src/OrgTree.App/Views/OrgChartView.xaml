@@ -45,16 +45,51 @@
                         Padding="16,12"
                         Margin="20,0"
                         HorizontalAlignment="Center">
-                    <StackPanel>
-                        <TextBlock Text="{Binding Name}"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding LeaderName, TargetNullValue=-}"
-                                   FontSize="18"
-                                   Margin="0,16,0,0"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding LeaderName, TargetNullValue=-}"
+                                       FontSize="18"
+                                       Margin="0,16,0,0"
+                                       HorizontalAlignment="Center"
+                                       Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}"/>
+                        </StackPanel>
+                        <ToggleButton Width="16"
+                                      Height="16"
+                                      Padding="0"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+                                      ToolTip="Abteilungsleitung ein- oder ausblenden"
+                                      AutomationProperties.Name="Abteilungsleitung ein- oder ausblenden"
+                                      FontFamily="Segoe MDL2 Assets"
+                                      FontSize="12">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Content" Value="&#xE70D;"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="False">
+                                            <Setter Property="Content" Value="&#xE76B;"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </Grid>
                 </Border>
 
                 <Rectangle Width="3"
