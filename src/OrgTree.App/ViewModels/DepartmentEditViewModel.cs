@@ -67,7 +67,9 @@ public partial class DepartmentEditViewModel : ObservableObject
         }
 
         ParentDepartments.Add(new SelectOption(null, "auswählen..."));
-        foreach (var other in departments.Where(d => !ownSubtree.Contains(d.Id)).OrderBy(d => d.Name))
+        foreach (var other in departments
+                     .Where(d => !ownSubtree.Contains(d.Id))
+                     .OrderBy(d => d.Name))
         {
             ParentDepartments.Add(new SelectOption(other.Id, other.Name));
         }

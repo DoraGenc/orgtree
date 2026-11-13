@@ -80,11 +80,6 @@ public partial class EmployeesViewModel : ObservableObject
             return;
         }
 
-        foreach (var department in db.Departments.Where(d => d.LeaderId == row.Id))
-        {
-            department.LeaderId = null;
-        }
-
         db.Employees.Remove(employee);
         db.SaveChanges();
 

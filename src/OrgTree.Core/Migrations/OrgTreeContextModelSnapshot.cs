@@ -37,6 +37,10 @@ namespace OrgTree.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LeaderId");
+
+                    b.HasIndex("ParentDepartmentId");
+
                     b.ToTable("Departments");
                 });
 
@@ -62,7 +66,30 @@ namespace OrgTree.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("OrgTree.Core.Department", b =>
+                {
+                    b.HasOne("OrgTree.Core.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("LeaderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("OrgTree.Core.Department", null)
+                        .WithMany()
+                        .HasForeignKey("ParentDepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("OrgTree.Core.Employee", b =>
+                {
+                    b.HasOne("OrgTree.Core.Department", null)
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 #pragma warning restore 612, 618
         }

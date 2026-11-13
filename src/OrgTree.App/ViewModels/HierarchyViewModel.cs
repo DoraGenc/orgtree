@@ -29,7 +29,7 @@ public partial class HierarchyViewModel : ObservableObject
 
         using var db = new OrgTreeContext();
 
-        var departments = db.Departments.OrderBy(d => d.Name).ToList();
+        var departments = db.Departments.OrderBy(department => department.Name).ToList();
         var employees = db.Employees.OrderBy(e => e.LastName).ThenBy(e => e.FirstName).ToList();
         var departmentIds = departments.Select(d => d.Id).ToHashSet();
         var visited = new HashSet<int>();
@@ -41,12 +41,13 @@ public partial class HierarchyViewModel : ObservableObject
         }
 
         var unassigned = employees
-            .Where(e => e.DepartmentId == null || !departmentIds.Contains(e.DepartmentId.Value))
+            .Where(employee => employee.DepartmentId == null
+                || !departmentIds.Contains(employee.DepartmentId.Value))
             .ToList();
 
         if (unassigned.Count > 0)
         {
-            var node = new DepartmentHierarchyNode { Name = "Ohne Abteilung" };
+            var node = new DepartmentHierarchyNode { Name = "Keine Abteilung zugeordnet" };
             foreach (var employee in unassigned)
             {
                 node.Children.Add(BuildEmployee(employee, isLeader: false, keyToRestore));
