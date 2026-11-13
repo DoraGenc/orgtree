@@ -29,7 +29,15 @@ public partial class EmployeeEditViewModel : ObservableObject
     private string _firstName = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PhoneNumberError))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _phoneNumber = "";
+
+    private bool IsPhoneNumberValid => Employee.IsValidPhoneNumber(PhoneNumber);
+
+    public string? PhoneNumberError => IsPhoneNumberValid
+        ? null
+        : "Ungültige Telefonnummer. Bitte im internationalen Format eingeben, z.B. +49 172 12345678.";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanBeDepartmentHead))]
@@ -87,7 +95,9 @@ public partial class EmployeeEditViewModel : ObservableObject
 
     private bool CanSave()
     {
-        return !string.IsNullOrWhiteSpace(LastName) && !string.IsNullOrWhiteSpace(FirstName);
+        return !string.IsNullOrWhiteSpace(LastName)
+            && !string.IsNullOrWhiteSpace(FirstName)
+            && IsPhoneNumberValid;
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
@@ -132,7 +142,7 @@ public partial class EmployeeEditViewModel : ObservableObject
 
         employee.LastName = LastName.Trim();
         employee.FirstName = FirstName.Trim();
-        employee.PhoneNumber = string.IsNullOrWhiteSpace(PhoneNumber) ? null : PhoneNumber.Trim();
+        employee.PhoneNumber = PhoneNumber;
         employee.DepartmentId = newDepartmentId;
 
         db.SaveChanges();
