@@ -69,6 +69,19 @@ public partial class DepartmentsViewModel : ObservableObject
     [RelayCommand]
     private void Delete(DepartmentRow row)
     {
+        var result = MessageBox.Show(
+            Application.Current.MainWindow,
+            $"Möchtest du die Abteilung „{row.Name}“ wirklich löschen? Zugeordnete Mitarbeitende und Unterabteilungen bleiben erhalten, verlieren aber ihre Zuordnung.",
+            "Abteilung löschen",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (result != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
         using var db = new OrgTreeContext();
 
         var department = db.Departments.Find(row.Id);
