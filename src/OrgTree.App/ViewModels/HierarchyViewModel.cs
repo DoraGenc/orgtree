@@ -108,18 +108,19 @@ public partial class HierarchyViewModel : ObservableObject
 
     public void Select(object? selected)
     {
-        if (selected is EmployeeHierarchyNode employeeNode)
+        using var db = new OrgTreeContext();
+
+        if (selected is EmployeeHierarchyNode employeeNode
+            && db.Employees.Find(employeeNode.Id) is Employee employee)
         {
-            var viewModel = new EmployeeEditViewModel(employeeNode.Id);
-            viewModel.CloseRequested += OnSaved;
-            Detail = viewModel;
+            Detail = BuildEmployeeDetails(db, employee);
             _selectedKey = employeeNode.Key;
         }
-        else if (selected is DepartmentHierarchyNode departmentNode && departmentNode.Id != null)
+        else if (selected is DepartmentHierarchyNode departmentNode
+            && departmentNode.Id != null
+            && db.Departments.Find(departmentNode.Id) is Department department)
         {
-            var viewModel = new DepartmentEditViewModel(departmentNode.Id);
-            viewModel.CloseRequested += OnSaved;
-            Detail = viewModel;
+            Detail = BuildDepartmentDetails(db, department);
             _selectedKey = departmentNode.Key;
         }
         else
@@ -129,11 +130,41 @@ public partial class HierarchyViewModel : ObservableObject
         }
     }
 
-    private void OnSaved(bool saved)
+    private static EmployeeDetails BuildEmployeeDetails(OrgTreeContext db, Employee employee)
     {
-        if (saved)
+        var department = employee.DepartmentId == null
+            ? null
+            : db.Departments.Find(employee.DepartmentId);
+
+        return new EmployeeDetails
         {
-            Load();
-        }
+            Id = employee.Id,
+            DisplayName = $"{employee.LastName}, {employee.FirstName}",
+            LastName = employee.LastName,
+            FirstName = employee.FirstName,
+            PhoneNumber = employee.PhoneNumber,
+            DepartmentName = department?.Name,
+            DepartmentHead = department?.LeaderId == employee.Id ? "Ja" : "Nein"
+        };
+    }
+
+    private static DepartmentDetails BuildDepartmentDetails(OrgTreeContext db, Department department)
+    {
+        var leader = department.LeaderId == null
+            ? null
+            : db.Employees.Find(department.LeaderId);
+
+        var parent = department.ParentDepartmentId == null
+            ? null
+            : db.Departments.Find(department.ParentDepartmentId);
+
+        return new DepartmentDetails
+        {
+            Id = department.Id,
+            Name = department.Name,
+            ColorHex = department.ColorHex,
+            LeaderName = leader == null ? null : $"{leader.LastName}, {leader.FirstName}",
+            ParentDepartmentName = parent?.Name
+        };
     }
 }
