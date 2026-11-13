@@ -30,7 +30,8 @@ namespace OrgTree.Core.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.Property<int?>("ParentDepartmentId")
                         .HasColumnType("INTEGER");
@@ -38,6 +39,9 @@ namespace OrgTree.Core.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LeaderId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("ParentDepartmentId");
 

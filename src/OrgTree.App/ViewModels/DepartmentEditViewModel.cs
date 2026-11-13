@@ -8,6 +8,7 @@ namespace OrgTree.App.ViewModels;
 public partial class DepartmentEditViewModel : ObservableObject
 {
     private readonly int? _departmentId;
+    private readonly HashSet<string> _otherDepartmentNames = new(StringComparer.OrdinalIgnoreCase);
 
     public string Heading => _departmentId == null ? "Erstellen" : "Editieren";
 
@@ -22,8 +23,15 @@ public partial class DepartmentEditViewModel : ObservableObject
     public ObservableCollection<SelectOption> ParentDepartments { get; } = new();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NameError))]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _name = "";
+
+    private bool IsNameTaken => _otherDepartmentNames.Contains(Name.Trim());
+
+    public string? NameError => IsNameTaken
+        ? $"Eine Abteilung mit dem Namen „{Name.Trim()}“ gibt es bereits. Bitte einen anderen Namen wählen."
+        : null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ColorError))]
@@ -56,6 +64,11 @@ public partial class DepartmentEditViewModel : ObservableObject
         using var db = new OrgTreeContext();
 
         var departments = db.Departments.ToList();
+
+        foreach (var other in departments.Where(d => d.Id != departmentId))
+        {
+            _otherDepartmentNames.Add(other.Name.Trim());
+        }
         var ownSubtree = departmentId == null
             ? new HashSet<int>()
             : CollectSubtreeIds(departments, departmentId.Value);
@@ -115,7 +128,9 @@ public partial class DepartmentEditViewModel : ObservableObject
 
     private bool CanSave()
     {
-        return !string.IsNullOrWhiteSpace(Name) && IsColorValid;
+        return !string.IsNullOrWhiteSpace(Name)
+            && !IsNameTaken
+            && IsColorValid;
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]

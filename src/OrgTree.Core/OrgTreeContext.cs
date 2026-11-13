@@ -35,6 +35,14 @@ public class OrgTreeContext : DbContext
             .WithMany()
             .HasForeignKey(department => department.ParentDepartmentId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Department>()
+            .Property(department => department.Name)
+            .UseCollation("NOCASE");
+
+        modelBuilder.Entity<Department>()
+            .HasIndex(department => department.Name)
+            .IsUnique();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
