@@ -64,7 +64,7 @@ public partial class EmployeeEditViewModel : ObservableObject
         foreach (var department in db.Departments.OrderBy(department => department.Name))
         {
             Departments.Add(new SelectOption(department.Id, department.Name));
-            if (department.LeaderId == employeeId)
+            if (employeeId != null && department.LeaderId == employeeId)
             {
                 _ledDepartmentIds.Add(department.Id);
             }
