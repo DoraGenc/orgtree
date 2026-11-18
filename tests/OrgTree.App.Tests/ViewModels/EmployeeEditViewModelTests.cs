@@ -165,35 +165,4 @@ public class EmployeeEditViewModelTests : DatabaseTest
         using var db = new OrgTreeContext();
         Assert.Equal("Annika", db.Employees.Single().FirstName);
     }
-
-    private static int AddDepartment(string name)
-    {
-        using var db = new OrgTreeContext();
-        var department = new Department { Name = name };
-        db.Departments.Add(department);
-        db.SaveChanges();
-        return department.Id;
-    }
-
-    private static int AddEmployee(string lastName, string firstName, string? phoneNumber, int? departmentId, bool isLeader)
-    {
-        using var db = new OrgTreeContext();
-        var employee = new Employee
-        {
-            LastName = lastName,
-            FirstName = firstName,
-            PhoneNumber = phoneNumber,
-            DepartmentId = departmentId
-        };
-        db.Employees.Add(employee);
-        db.SaveChanges();
-
-        if (isLeader && departmentId != null)
-        {
-            db.Departments.Find(departmentId)!.LeaderId = employee.Id;
-            db.SaveChanges();
-        }
-
-        return employee.Id;
-    }
 }

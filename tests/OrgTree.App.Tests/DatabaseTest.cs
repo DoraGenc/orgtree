@@ -20,4 +20,45 @@ public abstract class DatabaseTest
         db.Database.ExecuteSqlRaw("DELETE FROM Departments");
         db.Database.ExecuteSqlRaw("DELETE FROM sqlite_sequence");
     }
+
+    protected static int AddDepartment(string name, int? parentDepartmentId = null, string? colorHex = null)
+    {
+        using var db = new OrgTreeContext();
+        var department = new Department
+        {
+            Name = name,
+            ParentDepartmentId = parentDepartmentId,
+            ColorHex = colorHex
+        };
+        db.Departments.Add(department);
+        db.SaveChanges();
+        return department.Id;
+    }
+
+    protected static int AddEmployee(
+        string lastName,
+        string firstName,
+        string? phoneNumber = null,
+        int? departmentId = null,
+        bool isLeader = false)
+    {
+        using var db = new OrgTreeContext();
+        var employee = new Employee
+        {
+            LastName = lastName,
+            FirstName = firstName,
+            PhoneNumber = phoneNumber,
+            DepartmentId = departmentId
+        };
+        db.Employees.Add(employee);
+        db.SaveChanges();
+
+        if (isLeader && departmentId != null)
+        {
+            db.Departments.Find(departmentId)!.LeaderId = employee.Id;
+            db.SaveChanges();
+        }
+
+        return employee.Id;
+    }
 }
