@@ -4,6 +4,11 @@ namespace OrgTree.Core;
 
 public class OrgTreeContext : DbContext
 {
+    public static string DatabasePath { get; set; } = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "OrgTree",
+        "orgtree.db");
+
     public OrgTreeContext()
     {
     }
@@ -52,12 +57,12 @@ public class OrgTreeContext : DbContext
             return;
         }
 
-        var dir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "OrgTree");
-        Directory.CreateDirectory(dir);
+        var dir = Path.GetDirectoryName(DatabasePath);
+        if (!string.IsNullOrEmpty(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
 
-        var file = Path.Combine(dir, "orgtree.db");
-        optionsBuilder.UseSqlite($"Data Source={file}");
+        optionsBuilder.UseSqlite($"Data Source={DatabasePath}");
     }
 }

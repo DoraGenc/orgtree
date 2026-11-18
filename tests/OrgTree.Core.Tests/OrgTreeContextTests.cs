@@ -4,7 +4,7 @@ using OrgTree.Core;
 
 namespace OrgTree.Core.Tests;
 
-public class DepartmentRelationshipMigrationTests
+public class OrgTreeContextTests
 {
     [Fact]
     public void MigrationsEnforceDepartmentReferencesAndDeletionRules()
@@ -89,5 +89,47 @@ public class DepartmentRelationshipMigrationTests
         db.ChangeTracker.Clear();
 
         Assert.Null(db.Departments.Single(department => department.Id == child.Id).ParentDepartmentId);
+    }
+
+    [Fact]
+    public void DatabaseRejectsDepartmentNameThatDiffersOnlyInCase()
+    {
+        using var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+        using var db = CreateContext(connection);
+        db.Database.Migrate();
+
+        db.Departments.Add(new Department { Name = "Vertrieb" });
+        db.SaveChanges();
+
+        db.Departments.Add(new Department { Name = "vertrieb" });
+
+        Assert.Throws<DbUpdateException>(() => db.SaveChanges());
+    }
+
+    [Fact]
+    public void MigrationRenamesExistingDuplicateDepartmentNames()
+    {
+        using var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+        using var db = CreateContext(connection);
+        db.Database.Migrate("20261113101411_RemoveUnassignedDepartment");
+
+        db.Database.ExecuteSqlRaw(
+            "INSERT INTO Departments (Name) VALUES ('Vertrieb'), ('vertrieb'), ('IT'), ('VERTRIEB')");
+
+        db.Database.Migrate();
+
+        var names = db.Departments.OrderBy(department => department.Id).Select(department => department.Name).ToList();
+        Assert.Equal(["Vertrieb", "vertrieb (2)", "IT", "VERTRIEB (4)"], names);
+    }
+
+    private static OrgTreeContext CreateContext(SqliteConnection connection)
+    {
+        var options = new DbContextOptionsBuilder<OrgTreeContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        return new OrgTreeContext(options);
     }
 }
