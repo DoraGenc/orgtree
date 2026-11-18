@@ -10,6 +10,12 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        var databasePath = Environment.GetEnvironmentVariable("ORGTREE_DATABASE_PATH");
+        if (!string.IsNullOrWhiteSpace(databasePath))
+        {
+            OrgTreeContext.DatabasePath = databasePath;
+        }
+
         using var db = new OrgTreeContext();
         db.Database.Migrate();
     }

@@ -53,7 +53,7 @@
                                 </Grid.ColumnDefinitions>
                             </Grid>
                             <Border Background="White">
-                                <ContentPresenter ContentSource="SelectedContent"/>
+                                <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                             </Border>
                         </DockPanel>
                         <ControlTemplate.Triggers>
