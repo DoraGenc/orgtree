@@ -16,8 +16,8 @@
         <views:EmployeeForm/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,28,0,0">
-            <Button Content="Abbrechen" IsCancel="True" Style="{StaticResource DialogButton}"/>
-            <Button Content="Speichern" IsDefault="True" Command="{Binding SaveCommand}" Style="{StaticResource DialogButton}"/>
+            <Button AutomationProperties.AutomationId="CancelButton" Content="Abbrechen" IsCancel="True" Style="{StaticResource DialogButton}"/>
+            <Button AutomationProperties.AutomationId="SaveButton" Content="Speichern" IsDefault="True" Command="{Binding SaveCommand}" Style="{StaticResource DialogButton}"/>
         </StackPanel>
     </StackPanel>
 </Window>

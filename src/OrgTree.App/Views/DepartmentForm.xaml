@@ -8,8 +8,8 @@
         </StackPanel>
 
         <TextBlock Text="Name" Style="{StaticResource FieldLabel}"/>
-        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Text="{Binding NameError}"
+        <TextBox AutomationProperties.AutomationId="NameField" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock AutomationProperties.AutomationId="NameError" Text="{Binding NameError}"
                    Foreground="#C0392B"
                    TextWrapping="Wrap"
                    Margin="0,4,0,0">
@@ -32,9 +32,9 @@
                     Background="{Binding ColorPreview, TargetNullValue=Transparent}"
                     BorderBrush="Black"
                     BorderThickness="1"/>
-            <TextBox Text="{Binding ColorHex, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox AutomationProperties.AutomationId="ColorField" Text="{Binding ColorHex, UpdateSourceTrigger=PropertyChanged}"/>
         </DockPanel>
-        <TextBlock Text="{Binding ColorError}"
+        <TextBlock AutomationProperties.AutomationId="ColorError" Text="{Binding ColorError}"
                    Foreground="#C0392B"
                    TextWrapping="Wrap"
                    Margin="0,4,0,0">
@@ -50,12 +50,12 @@
         </TextBlock>
 
         <TextBlock Text="AbteilungsleiterIn" Style="{StaticResource FieldLabel}"/>
-        <ComboBox ItemsSource="{Binding Leaders}"
+        <ComboBox AutomationProperties.AutomationId="LeaderField" ItemsSource="{Binding Leaders}"
                   SelectedItem="{Binding SelectedLeader}"
                   DisplayMemberPath="Name"/>
 
         <TextBlock Text="Übergeordnete Abteilung" Style="{StaticResource FieldLabel}"/>
-        <ComboBox ItemsSource="{Binding ParentDepartments}"
+        <ComboBox AutomationProperties.AutomationId="ParentDepartmentField" ItemsSource="{Binding ParentDepartments}"
                   SelectedItem="{Binding SelectedParentDepartment}"
                   DisplayMemberPath="Name"/>
     </StackPanel>

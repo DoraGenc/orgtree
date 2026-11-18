@@ -6,10 +6,13 @@
             <Button DockPanel.Dock="Top"
                     Style="{StaticResource AddButton}"
                     ToolTip="MitarbeiterIn erstellen"
+                    AutomationProperties.AutomationId="CreateButton"
+                    AutomationProperties.Name="MitarbeiterIn erstellen"
                     Command="{Binding CreateCommand}"/>
 
             <Grid>
-                <DataGrid ItemsSource="{Binding Employees}"
+                <DataGrid AutomationProperties.AutomationId="EmployeesGrid"
+                          ItemsSource="{Binding Employees}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True">
                     <DataGrid.Columns>

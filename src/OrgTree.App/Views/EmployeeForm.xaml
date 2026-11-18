@@ -8,14 +8,14 @@
         </StackPanel>
 
         <TextBlock Text="Name" Style="{StaticResource FieldLabel}"/>
-        <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox AutomationProperties.AutomationId="LastNameField" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"/>
 
         <TextBlock Text="Vorname" Style="{StaticResource FieldLabel}"/>
-        <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox AutomationProperties.AutomationId="FirstNameField" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"/>
 
         <TextBlock Text="Telefonnummer" Style="{StaticResource FieldLabel}"/>
-        <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Text="{Binding PhoneNumberError}"
+        <TextBox AutomationProperties.AutomationId="PhoneNumberField" Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock AutomationProperties.AutomationId="PhoneNumberError" Text="{Binding PhoneNumberError}"
                    Foreground="#C0392B"
                    TextWrapping="Wrap"
                    Margin="0,4,0,0">
@@ -31,7 +31,7 @@
         </TextBlock>
 
         <TextBlock Text="Abteilung" Style="{StaticResource FieldLabel}" Margin="0,28,0,4"/>
-        <ComboBox ItemsSource="{Binding Departments}"
+        <ComboBox AutomationProperties.AutomationId="DepartmentField" ItemsSource="{Binding Departments}"
                   SelectedItem="{Binding SelectedDepartment}"
                   DisplayMemberPath="Name"
                   IsEnabled="{Binding HasDepartments}"/>
@@ -41,7 +41,7 @@
                    Margin="0,4,0,0"
                    Visibility="{Binding HasNoDepartments, Converter={StaticResource BoolToVisibility}}"/>
 
-        <CheckBox Content="AbteilungsleiterIn"
+        <CheckBox AutomationProperties.AutomationId="DepartmentHeadField" Content="AbteilungsleiterIn"
                   IsChecked="{Binding IsDepartmentHead}"
                   IsEnabled="{Binding CanBeDepartmentHead}"
                   FontSize="16"

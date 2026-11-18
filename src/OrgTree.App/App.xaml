@@ -155,11 +155,15 @@
                 <Button Style="{StaticResource IconButton}"
                         Content="&#xE74D;"
                         ToolTip="Löschen"
+                        AutomationProperties.AutomationId="DeleteButton"
+                        AutomationProperties.Name="Löschen"
                         Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                         CommandParameter="{Binding}"/>
                 <Button Style="{StaticResource IconButton}"
                         Content="&#xE70F;"
                         ToolTip="Bearbeiten"
+                        AutomationProperties.AutomationId="EditButton"
+                        AutomationProperties.Name="Bearbeiten"
                         Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                         CommandParameter="{Binding}"/>
             </StackPanel>
