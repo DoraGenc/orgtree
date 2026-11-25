@@ -4,11 +4,9 @@ using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class HierarchyViewModel : ObservableObject
+internal sealed partial class HierarchyViewModel : ObservableObject
 {
     private string? _selectedKey;
-
-    public ObservableCollection<DepartmentHierarchyNode> Roots { get; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowSelectionHint))]
@@ -18,12 +16,12 @@ public partial class HierarchyViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowSelectionHint))]
     private bool _isEmpty;
 
+    public ObservableCollection<DepartmentHierarchyNode> Roots { get; } = [];
+
     public bool ShowSelectionHint => Detail == null && !IsEmpty;
 
     public void Load()
     {
-        var keyToRestore = _selectedKey;
-
         Roots.Clear();
         Detail = null;
 
@@ -31,102 +29,36 @@ public partial class HierarchyViewModel : ObservableObject
 
         var departments = db.Departments.OrderBy(department => department.Name).ToList();
         var employees = db.Employees.OrderBy(e => e.LastName).ThenBy(e => e.FirstName).ToList();
-        var departmentIds = departments.Select(d => d.Id).ToHashSet();
-        var visited = new HashSet<int>();
 
-        foreach (var root in departments.Where(d => d.ParentDepartmentId == null || !departmentIds.Contains(d.ParentDepartmentId.Value)))
+        var builder = new TreeBuilder(departments, employees, _selectedKey);
+        foreach (var root in builder.BuildRoots())
         {
-            visited.Add(root.Id);
-            Roots.Add(BuildDepartment(root, departments, employees, visited, keyToRestore));
-        }
-
-        var unassigned = employees
-            .Where(employee => employee.DepartmentId == null
-                || !departmentIds.Contains(employee.DepartmentId.Value))
-            .ToList();
-
-        if (unassigned.Count > 0)
-        {
-            var node = new DepartmentHierarchyNode { Name = "Keine Abteilung zugeordnet" };
-            foreach (var employee in unassigned)
-            {
-                node.Children.Add(BuildEmployee(employee, isLeader: false, keyToRestore));
-            }
-
-            Roots.Add(node);
+            Roots.Add(root);
         }
 
         IsEmpty = Roots.Count == 0;
-    }
-
-    private static DepartmentHierarchyNode BuildDepartment(
-        Department department,
-        List<Department> departments,
-        List<Employee> employees,
-        HashSet<int> visited,
-        string? keyToRestore)
-    {
-        var node = new DepartmentHierarchyNode
-        {
-            Id = department.Id,
-            Name = department.Name,
-            ColorHex = department.ColorHex
-        };
-        node.IsSelected = node.Key == keyToRestore;
-
-        var members = employees
-            .Where(e => e.DepartmentId == department.Id)
-            .OrderByDescending(e => e.Id == department.LeaderId);
-
-        foreach (var employee in members)
-        {
-            node.Children.Add(BuildEmployee(employee, employee.Id == department.LeaderId, keyToRestore));
-        }
-
-        foreach (var child in departments.Where(d => d.ParentDepartmentId == department.Id))
-        {
-            if (visited.Add(child.Id))
-            {
-                node.Children.Add(BuildDepartment(child, departments, employees, visited, keyToRestore));
-            }
-        }
-
-        return node;
-    }
-
-    private static EmployeeHierarchyNode BuildEmployee(Employee employee, bool isLeader, string? keyToRestore)
-    {
-        var node = new EmployeeHierarchyNode
-        {
-            Id = employee.Id,
-            Name = $"{employee.FirstName} {employee.LastName}",
-            IsLeader = isLeader
-        };
-        node.IsSelected = node.Key == keyToRestore;
-        return node;
     }
 
     public void Select(object? selected)
     {
         using var db = new OrgTreeContext();
 
-        if (selected is EmployeeHierarchyNode employeeNode
-            && db.Employees.Find(employeeNode.Id) is Employee employee)
+        switch (selected)
         {
-            Detail = BuildEmployeeDetails(db, employee);
-            _selectedKey = employeeNode.Key;
-        }
-        else if (selected is DepartmentHierarchyNode departmentNode
-            && departmentNode.Id != null
-            && db.Departments.Find(departmentNode.Id) is Department department)
-        {
-            Detail = BuildDepartmentDetails(db, department);
-            _selectedKey = departmentNode.Key;
-        }
-        else
-        {
-            Detail = null;
-            _selectedKey = null;
+            case EmployeeHierarchyNode node when db.Employees.Find(node.Id) is Employee employee:
+                Detail = BuildEmployeeDetails(db, employee);
+                _selectedKey = node.Key;
+                break;
+
+            case DepartmentHierarchyNode { Id: int departmentId } node when db.Departments.Find(departmentId) is Department department:
+                Detail = BuildDepartmentDetails(db, department);
+                _selectedKey = node.Key;
+                break;
+
+            default:
+                Detail = null;
+                _selectedKey = null;
+                break;
         }
     }
 
@@ -139,12 +71,12 @@ public partial class HierarchyViewModel : ObservableObject
         return new EmployeeDetails
         {
             Id = employee.Id,
-            DisplayName = $"{employee.LastName}, {employee.FirstName}",
+            DisplayName = employee.DisplayName,
             LastName = employee.LastName,
             FirstName = employee.FirstName,
             PhoneNumber = employee.PhoneNumber,
             DepartmentName = department?.Name,
-            DepartmentHead = department?.LeaderId == employee.Id ? "Ja" : "Nein"
+            DepartmentHead = DisplayTexts.YesNo(department?.LeaderId == employee.Id)
         };
     }
 
@@ -163,8 +95,103 @@ public partial class HierarchyViewModel : ObservableObject
             Id = department.Id,
             Name = department.Name,
             ColorHex = department.ColorHex,
-            LeaderName = leader == null ? null : $"{leader.LastName}, {leader.FirstName}",
+            LeaderName = leader?.DisplayName,
             ParentDepartmentName = parent?.Name
         };
+    }
+
+    private sealed class TreeBuilder
+    {
+        private readonly List<Department> _departments;
+        private readonly HashSet<int> _departmentIds;
+        private readonly ILookup<int?, Department> _departmentsByParent;
+        private readonly List<Employee> _employees;
+        private readonly HashSet<int> _visited = [];
+        private readonly string? _selectedKey;
+
+        public TreeBuilder(List<Department> departments, List<Employee> employees, string? selectedKey)
+        {
+            _departments = departments;
+            _departmentIds = departments.Select(department => department.Id).ToHashSet();
+            _departmentsByParent = departments.ToLookup(department => department.ParentDepartmentId);
+            _employees = employees;
+            _selectedKey = selectedKey;
+        }
+
+        public IEnumerable<DepartmentHierarchyNode> BuildRoots()
+        {
+            var roots = _departments.Where(department => !HasExistingParent(department)).ToList();
+            foreach (var root in roots)
+            {
+                if (_visited.Add(root.Id))
+                {
+                    yield return BuildDepartment(root);
+                }
+            }
+
+            var unassigned = _employees.Where(employee => !BelongsToExistingDepartment(employee)).ToList();
+            if (unassigned.Count > 0)
+            {
+                yield return new DepartmentHierarchyNode
+                {
+                    Name = DisplayTexts.NoDepartment,
+                    Children = unassigned.Select(employee => BuildEmployee(employee, isLeader: false)).ToList()
+                };
+            }
+        }
+
+        private DepartmentHierarchyNode BuildDepartment(Department department)
+        {
+            var children = new List<HierarchyNode>();
+
+            var members = _employees
+                .Where(employee => employee.DepartmentId == department.Id)
+                .OrderByDescending(employee => employee.Id == department.LeaderId);
+
+            foreach (var member in members)
+            {
+                children.Add(BuildEmployee(member, isLeader: member.Id == department.LeaderId));
+            }
+
+            foreach (var child in _departmentsByParent[department.Id])
+            {
+                if (_visited.Add(child.Id))
+                {
+                    children.Add(BuildDepartment(child));
+                }
+            }
+
+            var node = new DepartmentHierarchyNode
+            {
+                Id = department.Id,
+                Name = department.Name,
+                ColorHex = department.ColorHex,
+                Children = children
+            };
+            node.IsSelected = node.Key == _selectedKey;
+            return node;
+        }
+
+        private EmployeeHierarchyNode BuildEmployee(Employee employee, bool isLeader)
+        {
+            var node = new EmployeeHierarchyNode
+            {
+                Id = employee.Id,
+                Name = employee.FullName,
+                IsLeader = isLeader
+            };
+            node.IsSelected = node.Key == _selectedKey;
+            return node;
+        }
+
+        private bool HasExistingParent(Department department)
+        {
+            return department.ParentDepartmentId is int parentId && _departmentIds.Contains(parentId);
+        }
+
+        private bool BelongsToExistingDepartment(Employee employee)
+        {
+            return employee.DepartmentId is int departmentId && _departmentIds.Contains(departmentId);
+        }
     }
 }

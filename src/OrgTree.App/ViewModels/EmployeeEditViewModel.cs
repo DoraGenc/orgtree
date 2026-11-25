@@ -5,20 +5,9 @@ using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class EmployeeEditViewModel : ObservableObject
+internal sealed partial class EmployeeEditViewModel : EditViewModel
 {
-    private readonly int? _employeeId;
-    private readonly HashSet<int> _ledDepartmentIds = new();
-
-    public string Heading => _employeeId == null ? "Erstellen" : "Editieren";
-
-    public int? Id => _employeeId;
-
-    public bool HasId => _employeeId != null;
-
-    public string DisplayName { get; } = "";
-
-    public ObservableCollection<SelectOption> Departments { get; } = new();
+    private readonly HashSet<int> _ledDepartmentIds = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -33,12 +22,6 @@ public partial class EmployeeEditViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _phoneNumber = "";
 
-    private bool IsPhoneNumberValid => Employee.IsValidPhoneNumber(PhoneNumber);
-
-    public string? PhoneNumberError => IsPhoneNumberValid
-        ? null
-        : "Ungültige Telefonnummer. Bitte im internationalen Format eingeben, z.B. +49 172 12345678.";
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanBeDepartmentHead))]
     private SelectOption? _selectedDepartment;
@@ -46,41 +29,56 @@ public partial class EmployeeEditViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDepartmentHead;
 
+    public EmployeeEditViewModel(int? employeeId = null)
+        : base(employeeId)
+    {
+        using var db = new OrgTreeContext();
+
+        LoadDepartmentOptions(db);
+
+        if (employeeId != null)
+        {
+            LoadEmployee(db, employeeId.Value);
+        }
+    }
+
+    public ObservableCollection<SelectOption> Departments { get; } = [];
+
+    public string? PhoneNumberError => IsPhoneNumberValid
+        ? null
+        : "Ungültige Telefonnummer. Bitte im internationalen Format eingeben, z.B. +49 172 12345678.";
+
     public bool CanBeDepartmentHead => SelectedDepartment?.Id != null;
 
     public bool HasDepartments => Departments.Any(department => department.Id != null);
 
     public bool HasNoDepartments => !HasDepartments;
 
-    public event Action<bool>? CloseRequested;
+    private bool IsPhoneNumberValid => Employee.IsValidPhoneNumber(PhoneNumber);
 
-    public EmployeeEditViewModel(int? employeeId = null)
+    private void LoadDepartmentOptions(OrgTreeContext db)
     {
-        _employeeId = employeeId;
+        Departments.Add(new SelectOption(null, DisplayTexts.NoDepartment));
 
-        using var db = new OrgTreeContext();
-
-        Departments.Add(new SelectOption(null, "Keine Abteilung zugeordnet"));
         foreach (var department in db.Departments.OrderBy(department => department.Name))
         {
             Departments.Add(new SelectOption(department.Id, department.Name));
-            if (employeeId != null && department.LeaderId == employeeId)
+
+            if (Id != null && department.LeaderId == Id)
             {
                 _ledDepartmentIds.Add(department.Id);
             }
         }
 
         SelectedDepartment = Departments[0];
+    }
 
-        if (employeeId == null)
-        {
-            return;
-        }
-
+    private void LoadEmployee(OrgTreeContext db, int employeeId)
+    {
         var employee = db.Employees.Find(employeeId)
             ?? throw new InvalidOperationException($"MitarbeiterIn {employeeId} existiert nicht.");
 
-        DisplayName = $"{employee.LastName}, {employee.FirstName}";
+        DisplayName = employee.DisplayName;
         LastName = employee.LastName;
         FirstName = employee.FirstName;
         PhoneNumber = employee.PhoneNumber ?? "";
@@ -105,48 +103,38 @@ public partial class EmployeeEditViewModel : ObservableObject
     {
         using var db = new OrgTreeContext();
 
-        Employee? employee;
-        if (_employeeId == null)
+        var employee = FindOrCreateEmployee(db);
+        if (employee == null)
         {
-            employee = new Employee { LastName = LastName.Trim(), FirstName = FirstName.Trim() };
-            db.Employees.Add(employee);
-            db.SaveChanges();
-        }
-        else
-        {
-            employee = db.Employees.Find(_employeeId);
-            if (employee == null)
-            {
-                CloseRequested?.Invoke(false);
-                return;
-            }
-        }
-
-        var employeeId = employee.Id;
-        var newDepartmentId = SelectedDepartment?.Id;
-        int? ledDepartmentId = IsDepartmentHead ? newDepartmentId : null;
-
-        foreach (var department in db.Departments.Where(d => d.LeaderId == employeeId && d.Id != ledDepartmentId))
-        {
-            department.LeaderId = null;
-        }
-
-        if (ledDepartmentId != null)
-        {
-            var department = db.Departments.Find(ledDepartmentId);
-            if (department != null)
-            {
-                department.LeaderId = employeeId;
-            }
+            RequestClose(false);
+            return;
         }
 
         employee.LastName = LastName.Trim();
         employee.FirstName = FirstName.Trim();
         employee.PhoneNumber = PhoneNumber;
-        employee.DepartmentId = newDepartmentId;
+        employee.DepartmentId = SelectedDepartment?.Id;
+
+        var ledDepartment = IsDepartmentHead && employee.DepartmentId != null
+            ? db.Departments.Find(employee.DepartmentId)
+            : null;
+        db.AssignDepartmentHead(employee, ledDepartment);
 
         db.SaveChanges();
 
-        CloseRequested?.Invoke(true);
+        RequestClose(true);
+    }
+
+    private Employee? FindOrCreateEmployee(OrgTreeContext db)
+    {
+        if (Id != null)
+        {
+            return db.Employees.Find(Id);
+        }
+
+        var employee = new Employee { LastName = LastName.Trim(), FirstName = FirstName.Trim() };
+        db.Employees.Add(employee);
+        db.SaveChanges();
+        return employee;
     }
 }

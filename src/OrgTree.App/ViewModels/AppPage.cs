@@ -1,6 +1,6 @@
 namespace OrgTree.App.ViewModels;
 
-public enum AppPage
+internal enum AppPage
 {
     Start,
     Departments,

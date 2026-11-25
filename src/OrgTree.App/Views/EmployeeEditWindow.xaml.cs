@@ -3,12 +3,12 @@ using OrgTree.App.ViewModels;
 
 namespace OrgTree.App.Views;
 
-public partial class EmployeeEditWindow : Window
+internal sealed partial class EmployeeEditWindow : Window
 {
     public EmployeeEditWindow(EmployeeEditViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
-        viewModel.CloseRequested += result => DialogResult = result;
+        viewModel.CloseRequested += (_, saved) => DialogResult = saved;
     }
 }

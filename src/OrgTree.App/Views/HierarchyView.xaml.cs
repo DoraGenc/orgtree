@@ -4,7 +4,7 @@ using OrgTree.App.ViewModels;
 
 namespace OrgTree.App.Views;
 
-public partial class HierarchyView : UserControl
+internal sealed partial class HierarchyView : UserControl
 {
     private readonly HierarchyViewModel _viewModel = new();
 

@@ -2,7 +2,7 @@ using System.Windows.Controls;
 
 namespace OrgTree.App.Views;
 
-public partial class EmployeeForm : UserControl
+internal sealed partial class EmployeeForm : UserControl
 {
     public EmployeeForm()
     {

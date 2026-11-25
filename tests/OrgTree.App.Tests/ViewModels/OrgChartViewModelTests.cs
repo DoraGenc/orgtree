@@ -93,7 +93,7 @@ public class OrgChartViewModelTests : DatabaseTest
 
         var root = viewModel.Roots.Single();
         Assert.Equal("#55AAFF", root.BoxColor);
-        Assert.Equal(DepartmentColors.Default, root.Children.Single().BoxColor);
+        Assert.Equal(DisplayTexts.DefaultDepartmentColor, root.Children.Single().BoxColor);
     }
 
     [Fact]

@@ -61,7 +61,7 @@ public class EmployeeEditViewModelTests : DatabaseTest
             PhoneNumber = "+4917212345678"
         };
         bool? closedWith = null;
-        viewModel.CloseRequested += saved => closedWith = saved;
+        viewModel.CloseRequested += (_, saved) => closedWith = saved;
 
         viewModel.SaveCommand.Execute(null);
 

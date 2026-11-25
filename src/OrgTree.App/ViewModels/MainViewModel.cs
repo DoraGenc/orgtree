@@ -3,10 +3,10 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+internal sealed partial class MainViewModel : ObservableObject
 {
     [ObservableProperty]
-    private int _selectedTabIndex;
+    private int _selectedTabIndex = (int)AppPage.Start;
 
     [RelayCommand]
     private void Navigate(AppPage page)

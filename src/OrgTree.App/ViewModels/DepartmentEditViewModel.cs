@@ -5,33 +5,14 @@ using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class DepartmentEditViewModel : ObservableObject
+internal sealed partial class DepartmentEditViewModel : EditViewModel
 {
-    private readonly int? _departmentId;
     private readonly HashSet<string> _otherDepartmentNames = new(StringComparer.OrdinalIgnoreCase);
-
-    public string Heading => _departmentId == null ? "Erstellen" : "Editieren";
-
-    public int? Id => _departmentId;
-
-    public bool HasId => _departmentId != null;
-
-    public string DisplayName { get; } = "";
-
-    public ObservableCollection<SelectOption> Leaders { get; } = new();
-
-    public ObservableCollection<SelectOption> ParentDepartments { get; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NameError))]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _name = "";
-
-    private bool IsNameTaken => _otherDepartmentNames.Contains(Name.Trim());
-
-    public string? NameError => IsNameTaken
-        ? $"Eine Abteilung mit dem Namen „{Name.Trim()}“ gibt es bereits. Bitte einen anderen Namen wählen."
-        : null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ColorError))]
@@ -39,21 +20,42 @@ public partial class DepartmentEditViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string _colorHex = "";
 
-    private string? NormalizedColorHex => string.IsNullOrWhiteSpace(ColorHex) ? null : ColorHex.Trim();
+    [ObservableProperty]
+    private SelectOption? _selectedLeader;
 
-    private bool IsColorValid => Department.IsValidColorHex(NormalizedColorHex);
+    [ObservableProperty]
+    private SelectOption? _selectedParentDepartment;
+
+    public DepartmentEditViewModel(int? departmentId = null)
+        : base(departmentId)
+    {
+        using var db = new OrgTreeContext();
+
+        var departments = db.Departments.ToList();
+
+        LoadOtherDepartmentNames(departments);
+        LoadLeaderOptions(db);
+        LoadParentDepartmentOptions(departments);
+
+        if (departmentId != null)
+        {
+            LoadDepartment(departments, departmentId.Value);
+        }
+    }
+
+    public ObservableCollection<SelectOption> Leaders { get; } = [];
+
+    public ObservableCollection<SelectOption> ParentDepartments { get; } = [];
+
+    public string? NameError => IsNameTaken
+        ? $"Eine Abteilung mit dem Namen „{Name.Trim()}“ gibt es bereits. Bitte einen anderen Namen wählen."
+        : null;
 
     public string? ColorError => IsColorValid
         ? null
         : "Ungültige Farbe. Erwartet: #RGB, #RRGGBB oder #AARRGGBB, z.B. #55AAFF.";
 
     public string? ColorPreview => IsColorValid ? NormalizedColorHex : null;
-
-    [ObservableProperty]
-    private SelectOption? _selectedLeader;
-
-    [ObservableProperty]
-    private SelectOption? _selectedParentDepartment;
 
     public bool HasLeaders => Leaders.Any(leader => leader.Id != null);
 
@@ -63,70 +65,75 @@ public partial class DepartmentEditViewModel : ObservableObject
 
     public bool HasNoParentDepartments => !HasParentDepartments;
 
-    public event Action<bool>? CloseRequested;
+    private bool IsNameTaken => _otherDepartmentNames.Contains(Name.Trim());
 
-    public DepartmentEditViewModel(int? departmentId = null)
+    private string? NormalizedColorHex => string.IsNullOrWhiteSpace(ColorHex) ? null : ColorHex.Trim();
+
+    private bool IsColorValid => Department.IsValidColorHex(NormalizedColorHex);
+
+    private void LoadOtherDepartmentNames(List<Department> departments)
     {
-        _departmentId = departmentId;
-
-        using var db = new OrgTreeContext();
-
-        var departments = db.Departments.ToList();
-
-        foreach (var other in departments.Where(d => d.Id != departmentId))
+        foreach (var other in departments.Where(department => department.Id != Id))
         {
             _otherDepartmentNames.Add(other.Name.Trim());
         }
-        var ownSubtree = departmentId == null
-            ? new HashSet<int>()
-            : CollectSubtreeIds(departments, departmentId.Value);
+    }
 
-        Leaders.Add(new SelectOption(null, "auswählen..."));
+    private void LoadLeaderOptions(OrgTreeContext db)
+    {
+        Leaders.Add(new SelectOption(null, DisplayTexts.PleaseSelect));
+
         foreach (var employee in db.Employees.OrderBy(e => e.LastName).ThenBy(e => e.FirstName))
         {
-            Leaders.Add(new SelectOption(employee.Id, $"{employee.LastName}, {employee.FirstName}"));
+            Leaders.Add(new SelectOption(employee.Id, employee.DisplayName));
         }
 
-        ParentDepartments.Add(new SelectOption(null, "auswählen..."));
-        foreach (var other in departments
-                     .Where(d => !ownSubtree.Contains(d.Id))
-                     .OrderBy(d => d.Name))
+        SelectedLeader = Leaders[0];
+    }
+
+    private void LoadParentDepartmentOptions(List<Department> departments)
+    {
+        HashSet<int> ownSubtree = Id == null
+            ? []
+            : CollectSubtreeIds(departments, Id.Value);
+
+        ParentDepartments.Add(new SelectOption(null, DisplayTexts.PleaseSelect));
+
+        foreach (var other in departments.Where(d => !ownSubtree.Contains(d.Id)).OrderBy(d => d.Name))
         {
             ParentDepartments.Add(new SelectOption(other.Id, other.Name));
         }
 
-        SelectedLeader = Leaders[0];
         SelectedParentDepartment = ParentDepartments[0];
+    }
 
-        if (departmentId == null)
-        {
-            return;
-        }
-
+    private void LoadDepartment(List<Department> departments, int departmentId)
+    {
         var department = departments.FirstOrDefault(d => d.Id == departmentId)
             ?? throw new InvalidOperationException($"Abteilung {departmentId} existiert nicht.");
 
         DisplayName = department.Name;
         Name = department.Name;
         ColorHex = department.ColorHex ?? "";
-        SelectedLeader = Leaders.FirstOrDefault(o => o.Id == department.LeaderId) ?? Leaders[0];
-        SelectedParentDepartment = ParentDepartments.FirstOrDefault(o => o.Id == department.ParentDepartmentId) ?? ParentDepartments[0];
+        SelectedLeader = Leaders.FirstOrDefault(option => option.Id == department.LeaderId) ?? Leaders[0];
+        SelectedParentDepartment = ParentDepartments.FirstOrDefault(option => option.Id == department.ParentDepartmentId)
+            ?? ParentDepartments[0];
     }
 
     private static HashSet<int> CollectSubtreeIds(List<Department> departments, int rootId)
     {
         var ids = new HashSet<int> { rootId };
-        var queue = new Queue<int>();
-        queue.Enqueue(rootId);
+        var pending = new Queue<int>();
+        pending.Enqueue(rootId);
 
-        while (queue.Count > 0)
+        while (pending.Count > 0)
         {
-            var current = queue.Dequeue();
+            var current = pending.Dequeue();
             foreach (var child in departments.Where(d => d.ParentDepartmentId == current))
             {
                 if (ids.Add(child.Id))
                 {
-                    queue.Enqueue(child.Id);
+                    pending.Enqueue(child.Id);
                 }
             }
         }
@@ -146,50 +153,50 @@ public partial class DepartmentEditViewModel : ObservableObject
     {
         using var db = new OrgTreeContext();
 
-        Department? department;
-        if (_departmentId == null)
+        var department = FindOrCreateDepartment(db);
+        if (department == null)
         {
-            department = new Department { Name = Name.Trim() };
-            db.Departments.Add(department);
-            db.SaveChanges();
-        }
-        else
-        {
-            department = db.Departments.Find(_departmentId);
-            if (department == null)
-            {
-                CloseRequested?.Invoke(false);
-                return;
-            }
-        }
-
-        var departmentId = department.Id;
-        var newLeaderId = SelectedLeader?.Id;
-
-        if (department.LeaderId != newLeaderId)
-        {
-            if (newLeaderId != null)
-            {
-                var leader = db.Employees.Find(newLeaderId);
-                if (leader != null)
-                {
-                    foreach (var otherDepartment in db.Departments.Where(d => d.LeaderId == newLeaderId && d.Id != departmentId))
-                    {
-                        otherDepartment.LeaderId = null;
-                    }
-
-                    leader.DepartmentId = departmentId;
-                }
-            }
+            RequestClose(false);
+            return;
         }
 
         department.Name = Name.Trim();
         department.ColorHex = NormalizedColorHex;
-        department.LeaderId = newLeaderId;
         department.ParentDepartmentId = SelectedParentDepartment?.Id;
+        UpdateLeader(db, department, SelectedLeader?.Id);
 
         db.SaveChanges();
 
-        CloseRequested?.Invoke(true);
+        RequestClose(true);
+    }
+
+    private Department? FindOrCreateDepartment(OrgTreeContext db)
+    {
+        if (Id != null)
+        {
+            return db.Departments.Find(Id);
+        }
+
+        var department = new Department { Name = Name.Trim() };
+        db.Departments.Add(department);
+        db.SaveChanges();
+        return department;
+    }
+
+    private static void UpdateLeader(OrgTreeContext db, Department department, int? newLeaderId)
+    {
+        if (department.LeaderId == newLeaderId)
+        {
+            return;
+        }
+
+        var newLeader = newLeaderId == null ? null : db.Employees.Find(newLeaderId);
+        if (newLeader == null)
+        {
+            department.LeaderId = null;
+            return;
+        }
+
+        db.AssignDepartmentHead(newLeader, department);
     }
 }

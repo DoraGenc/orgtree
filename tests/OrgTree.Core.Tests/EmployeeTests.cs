@@ -67,4 +67,13 @@ public class EmployeeTests
         Assert.False(success);
         Assert.Null(formatted);
     }
+
+    [Fact]
+    public void NamesAreFormattedForDisplayAndSorting()
+    {
+        var employee = new Employee { FirstName = "Anna", LastName = "Müller" };
+
+        Assert.Equal("Anna Müller", employee.FullName);
+        Assert.Equal("Müller, Anna", employee.DisplayName);
+    }
 }

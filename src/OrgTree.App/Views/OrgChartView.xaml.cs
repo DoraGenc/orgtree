@@ -3,7 +3,7 @@ using OrgTree.App.ViewModels;
 
 namespace OrgTree.App.Views;
 
-public partial class OrgChartView : UserControl
+internal sealed partial class OrgChartView : UserControl
 {
     public OrgChartView()
     {

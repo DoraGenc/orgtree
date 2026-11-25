@@ -1,18 +1,24 @@
 using System.Collections.ObjectModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OrgTree.App.Views;
+using OrgTree.App.Services;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class EmployeesViewModel : ObservableObject
+internal sealed partial class EmployeesViewModel : ObservableObject
 {
-    public ObservableCollection<EmployeeRow> Employees { get; } = new();
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private bool _isEmpty;
+
+    public EmployeesViewModel(IDialogService dialogService)
+    {
+        _dialogService = dialogService;
+    }
+
+    public ObservableCollection<EmployeeRow> Employees { get; } = [];
 
     public void Load()
     {
@@ -20,24 +26,23 @@ public partial class EmployeesViewModel : ObservableObject
 
         using var db = new OrgTreeContext();
 
-        var employees = db.Employees.ToList();
-        var departments = db.Departments.ToList();
+        var departmentsById = db.Departments.ToDictionary(department => department.Id);
 
-        foreach (var employee in employees)
+        foreach (var employee in db.Employees.ToList())
         {
-            var department = departments.FirstOrDefault(d => d.Id == employee.DepartmentId);
+            var department = employee.DepartmentId is int departmentId
+                ? departmentsById.GetValueOrDefault(departmentId)
+                : null;
 
             Employees.Add(new EmployeeRow
             {
                 Id = employee.Id,
-                Name = $"{employee.LastName}, {employee.FirstName}",
+                Name = employee.DisplayName,
                 PhoneNumber = employee.PhoneNumber,
                 DepartmentName = department?.Name,
                 DepartmentHead = department == null
                     ? null
-                    : department.LeaderId == employee.Id
-                        ? "Ja"
-                        : "Nein"
+                    : DisplayTexts.YesNo(department.LeaderId == employee.Id)
             });
         }
 
@@ -47,40 +52,23 @@ public partial class EmployeesViewModel : ObservableObject
     [RelayCommand]
     private void Create()
     {
-        OpenEditWindow(new EmployeeEditViewModel());
+        OpenEditor(new EmployeeEditViewModel());
     }
 
     [RelayCommand]
     private void Edit(EmployeeRow row)
     {
-        OpenEditWindow(new EmployeeEditViewModel(row.Id));
-    }
-
-    private void OpenEditWindow(EmployeeEditViewModel viewModel)
-    {
-        var window = new EmployeeEditWindow(viewModel)
-        {
-            Owner = Application.Current.MainWindow
-        };
-
-        if (window.ShowDialog() == true)
-        {
-            Load();
-        }
+        OpenEditor(new EmployeeEditViewModel(row.Id));
     }
 
     [RelayCommand]
     private void Delete(EmployeeRow row)
     {
-        var result = MessageBox.Show(
-            Application.Current.MainWindow,
-            $"Möchtest du „{row.Name}“ wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+        var confirmed = _dialogService.Confirm(
             "Mitarbeiter löschen",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning,
-            MessageBoxResult.No);
+            $"Möchtest du „{row.Name}“ wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.");
 
-        if (result != MessageBoxResult.Yes)
+        if (!confirmed)
         {
             return;
         }
@@ -97,5 +85,13 @@ public partial class EmployeesViewModel : ObservableObject
         db.SaveChanges();
 
         Load();
+    }
+
+    private void OpenEditor(EmployeeEditViewModel viewModel)
+    {
+        if (_dialogService.ShowEditor(viewModel))
+        {
+            Load();
+        }
     }
 }

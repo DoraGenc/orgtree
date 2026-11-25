@@ -101,7 +101,7 @@ public class DepartmentEditViewModelTests : DatabaseTest
     {
         var viewModel = new DepartmentEditViewModel { Name = "  Vertrieb ", ColorHex = " #55AAFF " };
         bool? closedWith = null;
-        viewModel.CloseRequested += saved => closedWith = saved;
+        viewModel.CloseRequested += (_, saved) => closedWith = saved;
 
         viewModel.SaveCommand.Execute(null);
 

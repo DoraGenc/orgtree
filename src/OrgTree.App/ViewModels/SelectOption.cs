@@ -1,3 +1,3 @@
 namespace OrgTree.App.ViewModels;
 
-public record SelectOption(int? Id, string Name);
+internal sealed record SelectOption(int? Id, string Name);

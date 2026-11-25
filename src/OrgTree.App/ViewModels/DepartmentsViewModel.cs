@@ -1,18 +1,24 @@
 using System.Collections.ObjectModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OrgTree.App.Views;
+using OrgTree.App.Services;
 using OrgTree.Core;
 
 namespace OrgTree.App.ViewModels;
 
-public partial class DepartmentsViewModel : ObservableObject
+internal sealed partial class DepartmentsViewModel : ObservableObject
 {
-    public ObservableCollection<DepartmentRow> Departments { get; } = new();
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private bool _isEmpty;
+
+    public DepartmentsViewModel(IDialogService dialogService)
+    {
+        _dialogService = dialogService;
+    }
+
+    public ObservableCollection<DepartmentRow> Departments { get; } = [];
 
     public void Load()
     {
@@ -21,18 +27,19 @@ public partial class DepartmentsViewModel : ObservableObject
         using var db = new OrgTreeContext();
 
         var departments = db.Departments.ToList();
-        var employees = db.Employees.ToList();
+        var departmentsById = departments.ToDictionary(department => department.Id);
+        var employeesById = db.Employees.ToDictionary(employee => employee.Id);
 
         foreach (var department in departments)
         {
-            var leader = employees.FirstOrDefault(e => e.Id == department.LeaderId);
-            var parent = departments.FirstOrDefault(d => d.Id == department.ParentDepartmentId);
+            var leader = department.LeaderId is int leaderId ? employeesById.GetValueOrDefault(leaderId) : null;
+            var parent = department.ParentDepartmentId is int parentId ? departmentsById.GetValueOrDefault(parentId) : null;
 
             Departments.Add(new DepartmentRow
             {
                 Id = department.Id,
                 Name = department.Name,
-                LeaderName = leader == null ? null : $"{leader.LastName}, {leader.FirstName}",
+                LeaderName = leader?.DisplayName,
                 ParentDepartmentName = parent?.Name,
                 ColorHex = department.ColorHex
             });
@@ -44,40 +51,23 @@ public partial class DepartmentsViewModel : ObservableObject
     [RelayCommand]
     private void Create()
     {
-        OpenEditWindow(new DepartmentEditViewModel());
+        OpenEditor(new DepartmentEditViewModel());
     }
 
     [RelayCommand]
     private void Edit(DepartmentRow row)
     {
-        OpenEditWindow(new DepartmentEditViewModel(row.Id));
-    }
-
-    private void OpenEditWindow(DepartmentEditViewModel viewModel)
-    {
-        var window = new DepartmentEditWindow(viewModel)
-        {
-            Owner = Application.Current.MainWindow
-        };
-
-        if (window.ShowDialog() == true)
-        {
-            Load();
-        }
+        OpenEditor(new DepartmentEditViewModel(row.Id));
     }
 
     [RelayCommand]
     private void Delete(DepartmentRow row)
     {
-        var result = MessageBox.Show(
-            Application.Current.MainWindow,
-            $"Möchtest du die Abteilung „{row.Name}“ wirklich löschen? Zugeordnete Mitarbeitende und Unterabteilungen bleiben erhalten, verlieren aber ihre Zuordnung.",
+        var confirmed = _dialogService.Confirm(
             "Abteilung löschen",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning,
-            MessageBoxResult.No);
+            $"Möchtest du die Abteilung „{row.Name}“ wirklich löschen? Zugeordnete Mitarbeitende und Unterabteilungen bleiben erhalten, verlieren aber ihre Zuordnung.");
 
-        if (result != MessageBoxResult.Yes)
+        if (!confirmed)
         {
             return;
         }
@@ -90,19 +80,17 @@ public partial class DepartmentsViewModel : ObservableObject
             return;
         }
 
-        foreach (var child in db.Departments.Where(d => d.ParentDepartmentId == row.Id))
-        {
-            child.ParentDepartmentId = null;
-        }
-
-        foreach (var employee in db.Employees.Where(employee => employee.DepartmentId == row.Id))
-        {
-            employee.DepartmentId = null;
-        }
-
-        db.Departments.Remove(department);
+        db.RemoveDepartment(department);
         db.SaveChanges();
 
         Load();
+    }
+
+    private void OpenEditor(DepartmentEditViewModel viewModel)
+    {
+        if (_dialogService.ShowEditor(viewModel))
+        {
+            Load();
+        }
     }
 }

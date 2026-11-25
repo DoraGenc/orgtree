@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OrgTree.App.ViewModels;
 
-public abstract partial class HierarchyNode : ObservableObject
+internal abstract partial class HierarchyNode : ObservableObject
 {
     [ObservableProperty]
     private bool _isSelected;
