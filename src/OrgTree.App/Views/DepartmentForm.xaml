@@ -52,11 +52,23 @@
         <TextBlock Text="AbteilungsleiterIn" Style="{StaticResource FieldLabel}"/>
         <ComboBox AutomationProperties.AutomationId="LeaderField" ItemsSource="{Binding Leaders}"
                   SelectedItem="{Binding SelectedLeader}"
-                  DisplayMemberPath="Name"/>
+                  DisplayMemberPath="Name"
+                  IsEnabled="{Binding HasLeaders}"/>
+        <TextBlock Text="Es gibt noch keine Mitarbeitenden. Die Abteilung wird zunächst ohne AbteilungsleiterIn gespeichert."
+                   Foreground="#C0392B"
+                   TextWrapping="Wrap"
+                   Margin="0,4,0,0"
+                   Visibility="{Binding HasNoLeaders, Converter={StaticResource BoolToVisibility}}"/>
 
         <TextBlock Text="Übergeordnete Abteilung" Style="{StaticResource FieldLabel}"/>
         <ComboBox AutomationProperties.AutomationId="ParentDepartmentField" ItemsSource="{Binding ParentDepartments}"
                   SelectedItem="{Binding SelectedParentDepartment}"
-                  DisplayMemberPath="Name"/>
+                  DisplayMemberPath="Name"
+                  IsEnabled="{Binding HasParentDepartments}"/>
+        <TextBlock Text="Es gibt noch keine andere Abteilung, die übergeordnet werden kann. Die Abteilung wird zunächst ohne übergeordnete Abteilung gespeichert."
+                   Foreground="#C0392B"
+                   TextWrapping="Wrap"
+                   Margin="0,4,0,0"
+                   Visibility="{Binding HasNoParentDepartments, Converter={StaticResource BoolToVisibility}}"/>
     </StackPanel>
 </UserControl>

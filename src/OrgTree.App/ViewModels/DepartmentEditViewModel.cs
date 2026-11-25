@@ -55,6 +55,14 @@ public partial class DepartmentEditViewModel : ObservableObject
     [ObservableProperty]
     private SelectOption? _selectedParentDepartment;
 
+    public bool HasLeaders => Leaders.Any(leader => leader.Id != null);
+
+    public bool HasNoLeaders => !HasLeaders;
+
+    public bool HasParentDepartments => ParentDepartments.Any(department => department.Id != null);
+
+    public bool HasNoParentDepartments => !HasParentDepartments;
+
     public event Action<bool>? CloseRequested;
 
     public DepartmentEditViewModel(int? departmentId = null)
